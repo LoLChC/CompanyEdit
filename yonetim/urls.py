@@ -27,24 +27,19 @@ urlpatterns = [
     path('fisler/', views.fis_liste, name='fis_liste'),
     path('fisler/yeni/', views.fis_ekle, name='fis_ekle'),
 
-    # Cari Hesaplar
     path('cariler/', views.cari_liste, name='cari_liste'),
     path('cariler/yeni/', views.cari_ekle, name='cari_ekle'),
 
-    # Kasa ve Banka
     path('kasalar/', views.kasa_liste, name='kasa_liste'),
     path('kasalar/yeni/', views.kasa_ekle, name='kasa_ekle'),
     path('kasalar/hareket-ekle/', views.kasa_hareket_ekle, name='kasa_hareket_ekle'),
 
-    # İşletme Giderleri
     path('giderler/', views.gider_liste, name='gider_liste'),
     path('giderler/yeni/', views.gider_ekle, name='gider_ekle'),
 
-    # Faturalar
     path('faturalar/', views.fatura_liste, name='fatura_liste'),
     path('faturalar/yeni/', views.fatura_ekle, name='fatura_ekle'),
 
-    # Çek / Senet Takibi
     path('ceksenet/', views.ceksenet_liste, name='ceksenet_liste'),
     path('ceksenet/yeni/', views.ceksenet_ekle, name='ceksenet_ekle'),
 ]
