@@ -1,0 +1,30 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Bütçe | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni Bütçe Ekle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Bütçe Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:butce_ekle' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="baslangic_butcesi">Başlangıç Bütçesi (TL)</label>
+                <input type="number" id="baslangic_butcesi" name="baslangic_butcesi" step="0.01" min="0" required placeholder="0.00">
+                <span class="field-hint">Güncel bütçe, alacaklar ve ödemelere göre otomatik hesaplanır</span>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <input type="text" id="aciklama" name="aciklama" maxlength="255" placeholder="Örn: 2026 Ana Bütçe">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:butce_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

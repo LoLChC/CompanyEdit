@@ -1,0 +1,58 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Haftalık Planlar | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Haftalık Planlar{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:haftalik_plan_ekle' %}" class="btn btn-primary">Yeni Plan Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Haftalık Plan Kayıtları</h2>
+        <span class="text-muted">{{ planlar|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if planlar %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Başlık</th>
+                        <th>Başlangıç</th>
+                        <th>Bitiş</th>
+                        <th>Durum</th>
+                        <th>Detay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in planlar %}
+                    <tr>
+                        <td>{{ plan.id }}</td>
+                        <td>{{ plan.baslik }}</td>
+                        <td>{{ plan.baslangic_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ plan.bitis_tarihi|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if plan.durum == 'tamamlandi' %}
+                            <span class="badge badge-success">Tamamlandı</span>
+                            {% else %}
+                            <span class="badge badge-warning">Bekliyor</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ plan.detay|default:"—"|truncatechars:80 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz haftalık plan kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:haftalik_plan_ekle' %}">İlk planı ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

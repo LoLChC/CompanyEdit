@@ -1,0 +1,62 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Fişler | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Fişler{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:fis_ekle' %}" class="btn btn-primary">Yeni Fiş Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Fiş Kayıtları</h2>
+        <span class="text-muted">{{ fisler|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if fisler %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tarih</th>
+                        <th>Kategori</th>
+                        <th class="text-right">Tutar</th>
+                        <th>Açıklama</th>
+                        <th>Görsel</th>
+                        <th>Bütçe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fis in fisler %}
+                    <tr>
+                        <td>{{ fis.id }}</td>
+                        <td>{{ fis.tarih|date:"d.m.Y" }}</td>
+                        <td>{{ fis.kategori }}</td>
+                        <td class="text-right amount">{{ fis.tutar }} TL</td>
+                        <td>{{ fis.aciklama|default:"—"|truncatechars:60 }}</td>
+                        <td>
+                            {% if fis.fis_gorseli %}
+                            <a href="{{ fis.fis_gorseli.url }}" target="_blank" rel="noopener">
+                                <img src="{{ fis.fis_gorseli.url }}" alt="Fiş #{{ fis.id }}" class="thumbnail">
+                            </a>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                        <td>{% if fis.butce %}#{{ fis.butce.id }}{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz fiş kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:fis_ekle' %}">İlk fişi ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

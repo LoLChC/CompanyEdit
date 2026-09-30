@@ -1,0 +1,66 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Vergilendirme | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Vergilendirme Ayarları{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:butce_liste' %}" class="btn btn-secondary">Bütçeye Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Vergi Oranları</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:vergi_ayarlari' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="kdv_orani">KDV Oranı (%)</label>
+                <input type="number" id="kdv_orani" name="kdv_orani" step="0.01" min="0" max="100" value="{{ ayar.kdv_orani }}" required>
+                <span class="field-hint">Alacak ve ödeme tutarlarından KDV hesaplanır</span>
+            </div>
+            <div class="form-group">
+                <label for="gelir_vergisi_orani">Gelir Vergisi Oranı (%)</label>
+                <input type="number" id="gelir_vergisi_orani" name="gelir_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.gelir_vergisi_orani }}">
+            </div>
+            <div class="form-group">
+                <label for="kurumlar_vergisi_orani">Kurumlar Vergisi Oranı (%)</label>
+                <input type="number" id="kurumlar_vergisi_orani" name="kurumlar_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.kurumlar_vergisi_orani }}">
+            </div>
+            <div class="form-group">
+                <label for="stopaj_orani">Stopaj Oranı (%)</label>
+                <input type="number" id="stopaj_orani" name="stopaj_orani" step="0.01" min="0" max="100" value="{{ ayar.stopaj_orani }}">
+            </div>
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="kdv_dahil" name="kdv_dahil" {% if ayar.kdv_dahil %}checked{% endif %}>
+                    Tutarlar KDV Dahil
+                </label>
+                <span class="field-hint">İşaretliyse girilen alacak/ödeme tutarları KDV dahil kabul edilir</span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet ve Bütçeyi Yeniden Hesapla</button>
+            <a href="{% url 'yonetim:butce_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>Hesaplama Mantığı</h2>
+    </div>
+    <div class="card-body info-body">
+        <ul class="info-list">
+            <li><strong>Gelen para:</strong> Durumu "Tahsil Edildi" olan alacaklar bütçeye eklenir.</li>
+            <li><strong>Giden para:</strong> Durumu "Ödendi" olan ödemeler bütçeden düşülür.</li>
+            <li><strong>Fişler:</strong> Tüm fiş tutarları gider olarak düşülür.</li>
+            <li><strong>KDV:</strong> Gelen KDV ile giden KDV arasındaki fark hesaplanır.</li>
+            <li><strong>Gelir / Kurumlar Vergisi:</strong> Net kar üzerinden uygulanır.</li>
+            <li><strong>Bekleyen kayıtlar:</strong> Henüz tahsil/ödeme yapılmamış tutarlar bütçeye dahil edilmez.</li>
+        </ul>
+        <p class="text-muted">Son güncelleme: {{ ayar.guncelleme_tarihi|date:"d.m.Y H:i" }}</p>
+    </div>
+</div>
+{% endblock %}

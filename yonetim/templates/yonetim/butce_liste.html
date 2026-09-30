@@ -1,0 +1,150 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Bütçe | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Bütçe{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:vergi_ayarlari' %}" class="btn btn-secondary">Vergilendirme Ayarları</a>
+<a href="{% url 'yonetim:butce_ekle' %}" class="btn btn-primary">Yeni Bütçe Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-primary">
+        <span class="summary-label">Güncel Bütçe</span>
+        <span class="summary-value">{{ genel_ozet.guncel_butce }} TL</span>
+    </div>
+    <div class="summary-card summary-success">
+        <span class="summary-label">Tahsil Edilen Alacaklar</span>
+        <span class="summary-value">+ {{ genel_ozet.brut_gelen }} TL</span>
+    </div>
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Ödenen Giderler</span>
+        <span class="summary-value">- {{ genel_ozet.brut_giden }} TL</span>
+    </div>
+    <div class="summary-card summary-warning">
+        <span class="summary-label">Toplam Vergi</span>
+        <span class="summary-value">- {{ genel_ozet.toplam_vergi }} TL</span>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h2>Bütçe Hesaplama Özeti</h2>
+        <span class="text-muted">Alacaklar (gelen) − Ödemeler (giden) − Fişler − Vergiler</span>
+    </div>
+    <div class="card-body">
+        <div class="calc-table-wrap">
+            <table class="calc-table">
+                <tbody>
+                    <tr>
+                        <td>Başlangıç Bütçesi</td>
+                        <td class="text-right amount">{{ genel_ozet.baslangic_butcesi }} TL</td>
+                    </tr>
+                    <tr class="calc-positive">
+                        <td>Tahsil Edilen Alacaklar (Brüt)</td>
+                        <td class="text-right amount">+ {{ genel_ozet.brut_gelen }} TL</td>
+                    </tr>
+                    <tr class="calc-negative">
+                        <td>Ödenen Ödemeler (Brüt)</td>
+                        <td class="text-right amount">- {{ genel_ozet.brut_giden }} TL</td>
+                    </tr>
+                    <tr class="calc-negative">
+                        <td>Fiş Giderleri</td>
+                        <td class="text-right amount">- {{ genel_ozet.brut_fis }} TL</td>
+                    </tr>
+                    <tr>
+                        <td>KDV (Ödenecek)</td>
+                        <td class="text-right amount">- {{ genel_ozet.kdv_odenecek }} TL</td>
+                    </tr>
+                    <tr>
+                        <td>Gelir Vergisi</td>
+                        <td class="text-right amount">- {{ genel_ozet.gelir_vergisi }} TL</td>
+                    </tr>
+                    <tr>
+                        <td>Kurumlar Vergisi</td>
+                        <td class="text-right amount">- {{ genel_ozet.kurumlar_vergisi }} TL</td>
+                    </tr>
+                    <tr>
+                        <td>Stopaj</td>
+                        <td class="text-right amount">- {{ genel_ozet.stopaj }} TL</td>
+                    </tr>
+                    <tr class="calc-total">
+                        <td><strong>Güncel Bütçe</strong></td>
+                        <td class="text-right amount"><strong>{{ genel_ozet.guncel_butce }} TL</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h2>Bekleyen İşlemler</h2>
+    </div>
+    <div class="card-body">
+        <div class="pending-grid">
+            <div class="pending-item">
+                <span class="pending-label">Bekleyen Alacaklar</span>
+                <span class="pending-value text-success">{{ genel_ozet.bekleyen_gelen }} TL</span>
+            </div>
+            <div class="pending-item">
+                <span class="pending-label">Bekleyen Ödemeler</span>
+                <span class="pending-value text-danger">{{ genel_ozet.bekleyen_giden }} TL</span>
+            </div>
+            <div class="pending-item">
+                <span class="pending-label">Kar / Zarar (Net)</span>
+                <span class="pending-value">{{ genel_ozet.kar_zarar }} TL</span>
+            </div>
+        </div>
+        <p class="text-muted" style="padding: 0 1.25rem 1rem;">Vergi oranları: KDV %{{ genel_ozet.vergi_ayarlari.kdv_orani }}, Gelir Vergisi %{{ genel_ozet.vergi_ayarlari.gelir_vergisi_orani }}, Kurumlar Vergisi %{{ genel_ozet.vergi_ayarlari.kurumlar_vergisi_orani }}. <a href="{% url 'yonetim:vergi_ayarlari' %}">Ayarları düzenle</a></p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Bütçe Kayıtları</h2>
+        <span class="text-muted">{{ butce_ozetleri|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if butce_ozetleri %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="text-right">Başlangıç</th>
+                        <th class="text-right">Güncel Bütçe</th>
+                        <th class="text-right">Gelen</th>
+                        <th class="text-right">Giden</th>
+                        <th class="text-right">Vergi</th>
+                        <th>Son İşlem</th>
+                        <th>Açıklama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in butce_ozetleri %}
+                    <tr>
+                        <td>{{ item.butce.id }}</td>
+                        <td class="text-right amount">{{ item.butce.baslangic_butcesi }} TL</td>
+                        <td class="text-right amount"><strong>{{ item.ozet.guncel_butce }} TL</strong></td>
+                        <td class="text-right amount text-success">+ {{ item.ozet.brut_gelen }} TL</td>
+                        <td class="text-right amount text-danger">- {{ item.ozet.brut_giden }} TL</td>
+                        <td class="text-right amount">- {{ item.ozet.toplam_vergi }} TL</td>
+                        <td>{{ item.butce.son_islem_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ item.butce.aciklama|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz bütçe kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:butce_ekle' %}">İlk bütçe kaydını ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

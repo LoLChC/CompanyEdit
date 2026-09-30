@@ -1,0 +1,62 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Alacaklar | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Alacaklar{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:alacak_ekle' %}" class="btn btn-primary">Yeni Alacak Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Alacak Kayıtları (Gelen Para)</h2>
+        <span class="text-muted">{{ alacaklar|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if alacaklar %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>İşlem Tarihi</th>
+                        <th>Tahsil Tarihi</th>
+                        <th>Kimden</th>
+                        <th class="text-right">Tutar (TL)</th>
+                        <th>Durum</th>
+                        <th>Açıklama</th>
+                        <th>Bütçe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alacak in alacaklar %}
+                    <tr>
+                        <td>{{ alacak.id }}</td>
+                        <td>{{ alacak.islem_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ alacak.tahsil_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ alacak.kimden }}</td>
+                        <td class="text-right amount text-success">{{ alacak.tutar }} TL</td>
+                        <td>
+                            {% if alacak.durum == 'tahsil_edildi' %}
+                            <span class="badge badge-success">Tahsil Edildi</span>
+                            {% else %}
+                            <span class="badge badge-warning">Bekliyor</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ alacak.aciklama|default:"—" }}</td>
+                        <td>{% if alacak.butce %}#{{ alacak.butce.id }}{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz alacak kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:alacak_ekle' %}">İlk alacağı ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

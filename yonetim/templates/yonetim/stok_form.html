@@ -1,0 +1,41 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Stok | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni Stok Ekle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Stok Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:stok_ekle' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="urun_adi">Ürün Adı</label>
+                <input type="text" id="urun_adi" name="urun_adi" maxlength="200" required placeholder="Ürün adı">
+            </div>
+            <div class="form-group">
+                <label for="adet_miktar">Adet / Miktar</label>
+                <input type="number" id="adet_miktar" name="adet_miktar" step="0.01" min="0" required placeholder="0">
+            </div>
+            <div class="form-group">
+                <label for="birim">Birim</label>
+                <input type="text" id="birim" name="birim" maxlength="50" value="Adet" placeholder="Adet, Kg, Lt vb.">
+            </div>
+            <div class="form-group">
+                <label for="alis_fiyati">Alış Fiyatı (TL)</label>
+                <input type="number" id="alis_fiyati" name="alis_fiyati" step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label for="alim_tarihi">Alım Tarihi</label>
+                <input type="date" id="alim_tarihi" name="alim_tarihi" value="{{ bugun|date:'Y-m-d' }}" required>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:stok_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

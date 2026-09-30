@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Şirket Yönetim Paneli{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'yonetim/css/style.css' %}">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                Şirket<span>Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'yonetim:odeme_liste' %}" class="{% if active_menu == 'odemeler' %}active{% endif %}">Ödemeler</a>
+                <a href="{% url 'yonetim:alacak_liste' %}" class="{% if active_menu == 'alacaklar' %}active{% endif %}">Alacaklar</a>
+                <a href="{% url 'yonetim:haftalik_plan_liste' %}" class="{% if active_menu == 'planlar' %}active{% endif %}">Haftalık Planlar</a>
+                <a href="{% url 'yonetim:stok_liste' %}" class="{% if active_menu == 'stoklar' %}active{% endif %}">Stoklar</a>
+                <a href="{% url 'yonetim:butce_liste' %}" class="{% if active_menu == 'butce' %}active{% endif %}">Bütçe</a>
+                <a href="{% url 'yonetim:vergi_ayarlari' %}" class="{% if active_menu == 'vergilendirme' %}active{% endif %}">Vergilendirme</a>
+                <a href="{% url 'yonetim:fis_liste' %}" class="{% if active_menu == 'fisler' %}active{% endif %}">Fişler</a>
+            </nav>
+        </aside>
+
+        <div class="main">
+            <header class="main-header">
+                <h1>{% block page_title %}Panel{% endblock %}</h1>
+                {% block header_actions %}{% endblock %}
+            </header>
+
+            <main class="main-content">
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

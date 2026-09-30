@@ -1,0 +1,62 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Ödemeler | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Ödemeler{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:odeme_ekle' %}" class="btn btn-primary">Yeni Ödeme Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Ödeme Kayıtları (Giden Para)</h2>
+        <span class="text-muted">{{ odemeler|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if odemeler %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>İşlem Tarihi</th>
+                        <th>Ödeme Tarihi</th>
+                        <th>Kime</th>
+                        <th class="text-right">Tutar (TL)</th>
+                        <th>Durum</th>
+                        <th>Açıklama</th>
+                        <th>Bütçe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for odeme in odemeler %}
+                    <tr>
+                        <td>{{ odeme.id }}</td>
+                        <td>{{ odeme.islem_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ odeme.vade_tarihi|date:"d.m.Y" }}</td>
+                        <td>{{ odeme.kime }}</td>
+                        <td class="text-right amount text-danger">{{ odeme.tutar }} TL</td>
+                        <td>
+                            {% if odeme.durum == 'odendi' %}
+                            <span class="badge badge-success">Ödendi</span>
+                            {% else %}
+                            <span class="badge badge-warning">Bekliyor</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ odeme.aciklama|default:"—" }}</td>
+                        <td>{% if odeme.butce %}#{{ odeme.butce.id }}{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz ödeme kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:odeme_ekle' %}">İlk ödemeyi ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

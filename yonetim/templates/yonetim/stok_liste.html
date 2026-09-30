@@ -1,0 +1,56 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Stoklar | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Stoklar{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:stok_ekle' %}" class="btn btn-primary">Yeni Stok Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Stok Kayıtları</h2>
+        <span class="text-muted">{{ stoklar|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if stoklar %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ürün Adı</th>
+                        <th class="text-right">Adet / Miktar</th>
+                        <th>Birim</th>
+                        <th class="text-right">Alış Fiyatı</th>
+                        <th>Alım Tarihi</th>
+                        <th class="text-right">Toplam Maliyet</th>
+                        <th>Son Güncelleme</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stok in stoklar %}
+                    <tr>
+                        <td>{{ stok.id }}</td>
+                        <td>{{ stok.urun_adi }}</td>
+                        <td class="text-right amount">{{ stok.adet_miktar }}</td>
+                        <td>{{ stok.birim }}</td>
+                        <td class="text-right amount">{{ stok.alis_fiyati }} TL</td>
+                        <td>{{ stok.alim_tarihi|date:"d.m.Y" }}</td>
+                        <td class="text-right amount">{{ stok.toplam_maliyet }} TL</td>
+                        <td>{{ stok.son_guncelleme|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz stok kaydı bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:stok_ekle' %}">İlk stok kaydını ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

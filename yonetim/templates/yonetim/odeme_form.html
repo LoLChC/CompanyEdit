@@ -1,0 +1,61 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Ödeme | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni Ödeme Ekle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Ödeme Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:odeme_ekle' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="tutar">Tutar (TL)</label>
+                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label for="islem_tarihi">İşlem Tarihi</label>
+                <input type="date" id="islem_tarihi" name="islem_tarihi" value="{{ bugun|date:'Y-m-d' }}" required>
+                <span class="field-hint">Kaydın oluşturulduğu / işlemin yapıldığı tarih</span>
+            </div>
+            <div class="form-group">
+                <label for="vade_tarihi">Ödeme Tarihi</label>
+                <input type="date" id="vade_tarihi" name="vade_tarihi" required>
+                <span class="field-hint">Paranın ne zaman ödeneceği</span>
+            </div>
+            <div class="form-group">
+                <label for="kime">Kime</label>
+                <input type="text" id="kime" name="kime" maxlength="200" required placeholder="Ödeme yapılacak kişi / firma">
+            </div>
+            <div class="form-group">
+                <label for="durum">Durum</label>
+                <select id="durum" name="durum" required>
+                    {% for value, label in durum_secenekleri %}
+                    <option value="{{ value }}" {% if value == 'bekliyor' %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="field-hint">Ödendi olarak işaretlenen tutarlar bütçeden düşülür</span>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama" placeholder="Ödeme detayları"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="butce">İlgili Bütçe (isteğe bağlı)</label>
+                <select id="butce" name="butce">
+                    <option value="">— Tüm bütçe hesabına dahil —</option>
+                    {% for butce in butceler %}
+                    <option value="{{ butce.id }}">#{{ butce.id }} — {{ butce.aciklama|default:"Bütçe" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:odeme_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
