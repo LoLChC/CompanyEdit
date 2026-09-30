@@ -1,7 +1,7 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Haftalık Planlar | Şirket Yönetim Paneli{% endblock %}
-{% block page_title %}Haftalık Planlar{% endblock %}
+{% block title %}Haftalık Takvim | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Haftalık Takvim{% endblock %}
 
 {% block header_actions %}
 <a href="{% url 'yonetim:haftalik_plan_ekle' %}" class="btn btn-primary">Yeni Plan Ekle</a>
@@ -9,50 +9,52 @@
 
 {% block content %}
 <div class="card">
-    <div class="card-header">
-        <h2>Haftalık Plan Kayıtları</h2>
-        <span class="text-muted">{{ planlar|length }} kayıt</span>
+    <div class="card-header calendar-header">
+        <div class="calendar-nav">
+            <a href="?baslangic={{ onceki_hafta|date:'Y-m-d' }}" class="btn btn-secondary">← Önceki Hafta</a>
+            <span class="calendar-range">
+                {{ hafta_baslangic|date:"d.m.Y" }} – {{ hafta_bitis|date:"d.m.Y" }}
+            </span>
+            <a href="?baslangic={{ sonraki_hafta|date:'Y-m-d' }}" class="btn btn-secondary">Sonraki Hafta →</a>
+        </div>
+        <a href="?baslangic={{ bugun|date:'Y-m-d' }}" class="btn btn-secondary">Bu Hafta</a>
     </div>
     <div class="card-body">
-        {% if planlar %}
-        <div class="table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Başlık</th>
-                        <th>Başlangıç</th>
-                        <th>Bitiş</th>
-                        <th>Durum</th>
-                        <th>Detay</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for plan in planlar %}
-                    <tr>
-                        <td>{{ plan.id }}</td>
-                        <td>{{ plan.baslik }}</td>
-                        <td>{{ plan.baslangic_tarihi|date:"d.m.Y" }}</td>
-                        <td>{{ plan.bitis_tarihi|date:"d.m.Y" }}</td>
-                        <td>
+        <div class="calendar-grid">
+            {% for gun in gunler %}
+            <div class="calendar-day {% if gun.bugun_mu %}calendar-day-today{% endif %}">
+                <div class="calendar-day-header">
+                    <span class="calendar-day-name">{{ gun.isim }}</span>
+                    <span class="calendar-day-date">{{ gun.tarih|date:"d.m" }}</span>
+                </div>
+                <div class="calendar-day-body">
+                    {% for plan in gun.planlar %}
+                    <div class="plan-card {% if plan.durum == 'tamamlandi' %}plan-card-done{% endif %}">
+                        <div class="plan-card-title">{{ plan.baslik }}</div>
+                        {% if plan.detay %}
+                        <div class="plan-card-detail">{{ plan.detay|truncatechars:70 }}</div>
+                        {% endif %}
+                        <div class="plan-card-footer">
                             {% if plan.durum == 'tamamlandi' %}
                             <span class="badge badge-success">Tamamlandı</span>
                             {% else %}
                             <span class="badge badge-warning">Bekliyor</span>
                             {% endif %}
-                        </td>
-                        <td>{{ plan.detay|default:"—"|truncatechars:80 }}</td>
-                    </tr>
+                            <form method="post" action="{% url 'yonetim:haftalik_plan_durum_degistir' plan.id %}" class="plan-card-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-mini">
+                                    {% if plan.durum == 'tamamlandi' %}Geri Al{% else %}Tamamla{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="calendar-empty">—</div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <p>Henüz haftalık plan kaydı bulunmuyor.</p>
-            <p><a href="{% url 'yonetim:haftalik_plan_ekle' %}">İlk planı ekleyin</a></p>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

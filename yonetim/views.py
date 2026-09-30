@@ -1,8 +1,9 @@
+from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_date as django_parse_date
 
@@ -166,8 +167,52 @@ def alacak_ekle(request):
 # ---------- Haftalık Planlar ----------
 
 def haftalik_plan_liste(request):
-    planlar = HaftalikPlan.objects.all()
-    return render(request, 'yonetim/haftalik_plan_liste.html', {'planlar': planlar})
+    bugun = timezone.now().date()
+
+    baslangic_param = request.GET.get('baslangic')
+    secilen = django_parse_date(baslangic_param) if baslangic_param else None
+    if secilen is None:
+        secilen = bugun
+
+    # Haftanın Pazartesi gününe normalize et
+    hafta_baslangic = secilen - timedelta(days=secilen.weekday())
+    hafta_bitis = hafta_baslangic + timedelta(days=6)
+
+    planlar = HaftalikPlan.objects.filter(
+        baslangic_tarihi__lte=hafta_bitis,
+        bitis_tarihi__gte=hafta_baslangic,
+    ).order_by('baslangic_tarihi', 'id')
+
+    gun_isimleri = [
+        'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe',
+        'Cuma', 'Cumartesi', 'Pazar',
+    ]
+
+    gunler = []
+    for i in range(7):
+        gun_tarihi = hafta_baslangic + timedelta(days=i)
+        gun_planlari = [
+            p for p in planlar
+            if p.baslangic_tarihi <= gun_tarihi <= p.bitis_tarihi
+        ]
+        gunler.append({
+            'tarih': gun_tarihi,
+            'isim': gun_isimleri[i],
+            'planlar': gun_planlari,
+            'bugun_mu': gun_tarihi == bugun,
+        })
+
+    onceki_hafta = hafta_baslangic - timedelta(days=7)
+    sonraki_hafta = hafta_baslangic + timedelta(days=7)
+
+    return render(request, 'yonetim/haftalik_plan_liste.html', {
+        'gunler': gunler,
+        'hafta_baslangic': hafta_baslangic,
+        'hafta_bitis': hafta_bitis,
+        'onceki_hafta': onceki_hafta,
+        'sonraki_hafta': sonraki_hafta,
+        'bugun': bugun,
+    })
 
 
 def haftalik_plan_ekle(request):
@@ -197,6 +242,22 @@ def haftalik_plan_ekle(request):
     return render(request, 'yonetim/haftalik_plan_form.html', {
         'durum_secenekleri': HaftalikPlan.DURUM_SECENEKLERI,
     })
+
+
+def haftalik_plan_durum_degistir(request, pk):
+    plan = get_object_or_404(HaftalikPlan, pk=pk)
+    if request.method == 'POST':
+        if plan.durum == HaftalikPlan.DURUM_TAMAMLANDI:
+            plan.durum = HaftalikPlan.DURUM_BEKLIYOR
+        else:
+            plan.durum = HaftalikPlan.DURUM_TAMAMLANDI
+        plan.save(update_fields=['durum'])
+        messages.success(request, f'"{plan.baslik}" planının durumu güncellendi.')
+
+    geri_donus = request.META.get('HTTP_REFERER')
+    if geri_donus:
+        return redirect(geri_donus)
+    return redirect('yonetim:haftalik_plan_liste')
 
 
 # ---------- Stoklar ----------
@@ -679,4 +740,69 @@ def ceksenet_ekle(request):
         'yon_secenekleri': CekSenet.YON_SECENEKLERI,
         'durum_secenekleri': CekSenet.DURUM_SECENEKLERI,
         'bugun': timezone.now().date(),
+    })
+
+
+# ---------- Finansal Portföy (Yönetici Dashboard) ----------
+
+def finans_portfoy(request):
+    # Kasa & Banka toplamı
+    kasalar = Kasa.objects.all()
+    toplam_kasa = sum((k.guncel_bakiye for k in kasalar), Decimal('0'))
+
+    # Cari alacak / borç dengesi
+    cariler = CariHesap.objects.all()
+    toplam_alacak = sum((c.guncel_bakiye for c in cariler if c.guncel_bakiye > 0), Decimal('0'))
+    toplam_borc = sum((c.guncel_bakiye for c in cariler if c.guncel_bakiye < 0), Decimal('0'))
+    toplam_borc = abs(toplam_borc)
+    net_cari = toplam_alacak - toplam_borc
+
+    # Bekleyen çek / senet toplamları (portföyde olanlar)
+    bekleyen_belgeler = CekSenet.objects.filter(durum=CekSenet.DURUM_PORTFOY)
+    bekleyen_alinan = sum(
+        (b.tutar for b in bekleyen_belgeler if b.yon == CekSenet.YON_ALINAN),
+        Decimal('0'),
+    )
+    bekleyen_verilen = sum(
+        (b.tutar for b in bekleyen_belgeler if b.yon == CekSenet.YON_VERILEN),
+        Decimal('0'),
+    )
+    net_ceksenet = bekleyen_alinan - bekleyen_verilen
+
+    # Faturalar
+    faturalar = Fatura.objects.all()
+    toplam_gelen_fatura = sum(
+        (f.toplam_tutar for f in faturalar if f.tur == Fatura.TUR_GELEN),
+        Decimal('0'),
+    )
+    toplam_giden_fatura = sum(
+        (f.toplam_tutar for f in faturalar if f.tur == Fatura.TUR_GIDEN),
+        Decimal('0'),
+    )
+
+    # İşletme giderleri
+    giderler = IsletmeGideri.objects.all()
+    toplam_gider = sum((g.tutar for g in giderler), Decimal('0'))
+
+    # Operasyonel kâr / zarar
+    operasyonel_kar = toplam_gelen_fatura - toplam_giden_fatura - toplam_gider
+
+    # Son kasa hareketleri
+    son_hareketler = KasaHareketi.objects.select_related(
+        'kasa', 'cari_hesap', 'fatura', 'isletme_gideri'
+    ).order_by('-tarih', '-id')[:20]
+
+    return render(request, 'yonetim/finans_portfoy.html', {
+        'toplam_kasa': toplam_kasa,
+        'toplam_alacak': toplam_alacak,
+        'toplam_borc': toplam_borc,
+        'net_cari': net_cari,
+        'bekleyen_alinan': bekleyen_alinan,
+        'bekleyen_verilen': bekleyen_verilen,
+        'net_ceksenet': net_ceksenet,
+        'toplam_gelen_fatura': toplam_gelen_fatura,
+        'toplam_giden_fatura': toplam_giden_fatura,
+        'toplam_gider': toplam_gider,
+        'operasyonel_kar': operasyonel_kar,
+        'son_hareketler': son_hareketler,
     })

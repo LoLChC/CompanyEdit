@@ -15,6 +15,7 @@ urlpatterns = [
 
     path('planlar/', views.haftalik_plan_liste, name='haftalik_plan_liste'),
     path('planlar/yeni/', views.haftalik_plan_ekle, name='haftalik_plan_ekle'),
+    path('planlar/<int:pk>/durum/', views.haftalik_plan_durum_degistir, name='haftalik_plan_durum_degistir'),
 
     path('stoklar/', views.stok_liste, name='stok_liste'),
     path('stoklar/yeni/', views.stok_ekle, name='stok_ekle'),
@@ -42,4 +43,6 @@ urlpatterns = [
 
     path('ceksenet/', views.ceksenet_liste, name='ceksenet_liste'),
     path('ceksenet/yeni/', views.ceksenet_ekle, name='ceksenet_ekle'),
+
+    path('portfoy/', views.finans_portfoy, name='finans_portfoy'),
 ]

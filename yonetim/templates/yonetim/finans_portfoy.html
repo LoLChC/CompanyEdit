@@ -1,0 +1,150 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Finansal Portföy | Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Finansal Portföy{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-primary">
+        <span class="summary-label">Toplam Kasa & Banka</span>
+        <span class="summary-value">{{ toplam_kasa|floatformat:2 }} ₺</span>
+    </div>
+    <div class="summary-card summary-success">
+        <span class="summary-label">Cari Alacak</span>
+        <span class="summary-value">{{ toplam_alacak|floatformat:2 }} ₺</span>
+    </div>
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Cari Borç</span>
+        <span class="summary-value">{{ toplam_borc|floatformat:2 }} ₺</span>
+    </div>
+    <div class="summary-card {% if operasyonel_kar >= 0 %}summary-success{% else %}summary-danger{% endif %}">
+        <span class="summary-label">Operasyonel Kâr / Zarar</span>
+        <span class="summary-value">{{ operasyonel_kar|floatformat:2 }} ₺</span>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card">
+        <div class="card-header">
+            <h2>Cari Denge</h2>
+        </div>
+        <div class="card-body">
+            <table class="calc-table">
+                <tr>
+                    <td>Toplam Alacak</td>
+                    <td class="text-success">{{ toplam_alacak|floatformat:2 }} ₺</td>
+                </tr>
+                <tr>
+                    <td>Toplam Borç</td>
+                    <td class="text-danger">{{ toplam_borc|floatformat:2 }} ₺</td>
+                </tr>
+                <tr class="calc-total">
+                    <td>Net Denge</td>
+                    <td class="{% if net_cari >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ net_cari|floatformat:2 }} ₺
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Bekleyen Çek / Senet</h2>
+        </div>
+        <div class="card-body">
+            <table class="calc-table">
+                <tr>
+                    <td>Alınan (Portföyde)</td>
+                    <td class="text-success">{{ bekleyen_alinan|floatformat:2 }} ₺</td>
+                </tr>
+                <tr>
+                    <td>Verilen (Portföyde)</td>
+                    <td class="text-danger">{{ bekleyen_verilen|floatformat:2 }} ₺</td>
+                </tr>
+                <tr class="calc-total">
+                    <td>Net</td>
+                    <td class="{% if net_ceksenet >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ net_ceksenet|floatformat:2 }} ₺
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Operasyonel Kâr / Zarar</h2>
+        </div>
+        <div class="card-body">
+            <table class="calc-table">
+                <tr>
+                    <td>Gelen Faturalar</td>
+                    <td class="text-success">{{ toplam_gelen_fatura|floatformat:2 }} ₺</td>
+                </tr>
+                <tr>
+                    <td>Giden Faturalar</td>
+                    <td class="text-danger">{{ toplam_giden_fatura|floatformat:2 }} ₺</td>
+                </tr>
+                <tr>
+                    <td>İşletme Giderleri</td>
+                    <td class="text-danger">{{ toplam_gider|floatformat:2 }} ₺</td>
+                </tr>
+                <tr class="calc-total">
+                    <td>Net Kâr / Zarar</td>
+                    <td class="{% if operasyonel_kar >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {{ operasyonel_kar|floatformat:2 }} ₺
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Son Kasa Hareketleri</h2>
+        <span class="text-muted">Son 20 hareket</span>
+    </div>
+    <div class="card-body">
+        {% if son_hareketler %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Kasa</th>
+                        <th>İşlem</th>
+                        <th>Cari</th>
+                        <th>Açıklama</th>
+                        <th class="text-right">Tutar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in son_hareketler %}
+                    <tr>
+                        <td>{{ h.tarih|date:"d.m.Y" }}</td>
+                        <td>{{ h.kasa.kasa_adi }}</td>
+                        <td>
+                            {% if h.islem_turu == 'giris' %}
+                            <span class="badge badge-success">Giriş</span>
+                            {% else %}
+                            <span class="badge badge-danger">Çıkış</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ h.cari_hesap.unvan|default:"—" }}</td>
+                        <td>{{ h.aciklama|default:"—"|truncatechars:60 }}</td>
+                        <td class="text-right amount">{{ h.tutar|floatformat:2 }} ₺</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz kasa hareketi bulunmuyor.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
