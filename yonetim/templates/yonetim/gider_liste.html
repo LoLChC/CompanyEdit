@@ -1,0 +1,67 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}İşletme Giderleri - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}İşletme Giderleri{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:gider_ekle' %}" class="btn btn-primary">+ Yeni Gider Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Toplam İşletme Gideri</span>
+        <span class="summary-value">{{ toplam_gider|floatformat:2 }} TL</span>
+    </div>
+    <div class="summary-card summary-primary">
+        <span class="summary-label">Kayıt Sayısı</span>
+        <span class="summary-value">{{ giderler|length }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Gider Listesi</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ödeme Tarihi</th>
+                    <th>Kategori</th>
+                    <th>Açıklama</th>
+                    <th>Ödenen Kasa</th>
+                    <th>KDV Oranı</th>
+                    <th class="text-right">Tutar</th>
+                    <th>Belge</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gider in giderler %}
+                <tr>
+                    <td>{{ gider.odeme_tarihi|date:"d.m.Y" }}</td>
+                    <td><span class="badge badge-info">{{ gider.kategori.ad }}</span></td>
+                    <td>{{ gider.aciklama|default:"-" }}</td>
+                    <td>{{ gider.kasa.kasa_adi|default:"Belirtilmedi" }}</td>
+                    <td>%{{ gider.kdv_orani }}</td>
+                    <td class="text-right amount text-danger">
+                        -{{ gider.tutar|floatformat:2 }} TL
+                    </td>
+                    <td>
+                        {% if gider.belge %}
+                        <a href="{{ gider.belge.url }}" target="_blank" class="badge badge-secondary">Belgeyi Gör</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-state">Henüz işletme gideri kaydı bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

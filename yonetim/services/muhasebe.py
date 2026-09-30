@@ -8,7 +8,7 @@ SIFIR = Decimal('0.00')
 def _q(tutar):
     if tutar is None:
         return SIFIR
-    return Decimal(tutar).quantize(Decimal('0.01'))
+    return Decimal(str(tutar)).quantize(Decimal('0.01'))
 
 
 def kdv_hesapla(matrah, kdv_orani):
@@ -25,22 +25,27 @@ def cari_guncelle(cari):
 
     bakiye = _q(cari.baslangic_bakiyesi)
 
+    # Gelen faturalarda (tedarikçi/alış): Biz borçlanırız (+bakiye: bize alacaklı)
+    # Giden faturalarda (müşteri/satış): Müşteri borçlanır (-bakiye: bize borçlu)
     for fatura in Fatura.objects.filter(cari_hesap=cari):
         kalan = _q(fatura.toplam_tutar) - _q(fatura.odenen_tutar)
         if kalan < SIFIR:
             kalan = SIFIR
-        if fatura.turu == Fatura.TUR_GIDEN:
+        if fatura.tur == Fatura.TUR_GELEN:
             bakiye += kalan
         else:
             bakiye -= kalan
 
+    # Doğrudan kasa hareketleri (faturaya bağlı olmayanlar)
     for hareket in KasaHareketi.objects.filter(cari_hesap=cari, fatura__isnull=True, isletme_gideri__isnull=True):
-        if hareket.islem_turu == KasaHareketi.TUR_GIRIS:
+        if hareket.islem_turu == KasaHareketi.ISLEM_GIRIS:
+            # Cari bize ödeme yaptı, alacağımız/bakiyemiz azalır
             bakiye -= _q(hareket.tutar)
         else:
+            # Biz cariye ödeme yaptık, borcumuz azalır
             bakiye += _q(hareket.tutar)
 
-    for belge in CekSenet.objects.filter(cari_hesap=cari).exclude(durum=CekSenet.DURUM_KARSIKSIZ):
+    for belge in CekSenet.objects.filter(cari_hesap=cari).exclude(durum=CekSenet.DURUM_KARSILIKSIZ):
         if belge.yon == CekSenet.YON_ALINAN:
             bakiye -= _q(belge.tutar)
         else:
@@ -57,7 +62,7 @@ def kasa_guncelle(kasa):
 
     bakiye = _q(kasa.baslangic_bakiyesi)
     for hareket in KasaHareketi.objects.filter(kasa=kasa):
-        if hareket.islem_turu == KasaHareketi.TUR_GIRIS:
+        if hareket.islem_turu == KasaHareketi.ISLEM_GIRIS:
             bakiye += _q(hareket.tutar)
         else:
             bakiye -= _q(hareket.tutar)
@@ -77,7 +82,7 @@ def kasa_hareketi_olustur(
     isletme_gideri=None,
     fatura=None,
 ):
-    if kasa is None or tutar is None or tutar <= SIFIR:
+    if kasa is None or tutar is None or Decimal(str(tutar)) <= SIFIR:
         return None
 
     hareket = KasaHareketi.objects.create(

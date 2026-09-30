@@ -1,0 +1,79 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Cari Hesaplar - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Cari Hesap Yönetimi{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:cari_ekle' %}" class="btn btn-primary">+ Yeni Cari Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-primary">
+        <span class="summary-label">Toplam Cari</span>
+        <span class="summary-value">{{ cariler|length }}</span>
+    </div>
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Toplam Borcumuz (Tedarikçi Alacağı)</span>
+        <span class="summary-value">{{ toplam_alacak|floatformat:2 }} TL</span>
+    </div>
+    <div class="summary-card summary-success">
+        <span class="summary-label">Toplam Alacağımız (Müşteri Borcu)</span>
+        <span class="summary-value">{{ toplam_borc|floatformat:2 }} TL</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Cari Hesap Listesi</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Unvan</th>
+                    <th>Tür</th>
+                    <th>Yetkili</th>
+                    <th>Telefon / E-posta</th>
+                    <th>Vergi Dairesi / No</th>
+                    <th class="text-right">Güncel Bakiye</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cari in cariler %}
+                <tr>
+                    <td><strong>{{ cari.unvan }}</strong></td>
+                    <td>
+                        <span class="badge {% if cari.tur == 'musteri' %}badge-info{% elif cari.tur == 'tedarikci' %}badge-warning{% else %}badge-secondary{% endif %}">
+                            {{ cari.get_tur_display }}
+                        </span>
+                    </td>
+                    <td>{{ cari.yetkili|default:"-" }}</td>
+                    <td>
+                        <div>{{ cari.telefon|default:"-" }}</div>
+                        <small class="text-muted">{{ cari.eposta|default:"" }}</small>
+                    </td>
+                    <td>
+                        {{ cari.vergi_dairesi|default:"-" }}
+                        {% if cari.vergi_no %}<br><small class="text-muted">{{ cari.vergi_no }}</small>{% endif %}
+                    </td>
+                    <td class="text-right amount {% if cari.guncel_bakiye > 0 %}text-danger{% elif cari.guncel_bakiye < 0 %}text-success{% endif %}">
+                        {{ cari.guncel_bakiye|floatformat:2 }} TL
+                    </td>
+                    <td>
+                        <span class="badge {% if cari.guncel_bakiye > 0 %}badge-danger{% elif cari.guncel_bakiye < 0 %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ cari.bakiye_durumu }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-state">Henüz kayıtlı bir cari hesap bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

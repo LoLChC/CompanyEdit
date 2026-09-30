@@ -1,0 +1,76 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Gider Ekle - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni İşletme Gideri Ekle{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:gider_liste' %}" class="btn btn-secondary">Listeye Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Gider Bilgileri</h2>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="kategori">Gider Kategorisi</label>
+                <select id="kategori" name="kategori">
+                    <option value="">Var Olan Kategorilerden Seçin...</option>
+                    {% for kat in kategoriler %}
+                    <option value="{{ kat.id }}">{{ kat.ad }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="yeni_kategori">veya Yeni Kategori Oluştur</label>
+                <input type="text" id="yeni_kategori" name="yeni_kategori" placeholder="Örn: Ofis Kirası, Elektrik, Yemek...">
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="tutar">Tutar (TL) *</label>
+                    <input type="number" step="0.01" id="tutar" name="tutar" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="kdv_orani">KDV Oranı (%)</label>
+                    <input type="number" step="0.01" id="kdv_orani" name="kdv_orani" value="{{ varsayilan_kdv }}">
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="odeme_tarihi">Ödeme Tarihi *</label>
+                    <input type="date" id="odeme_tarihi" name="odeme_tarihi" value="{{ bugun|date:'Y-m-d' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="kasa">Hangi Kasadan Ödendi?</label>
+                    <select id="kasa" name="kasa">
+                        <option value="">Kasadan Çıkış Yapma (Manuel)</option>
+                        {% for k in kasalar %}
+                        <option value="{{ k.id }}">{{ k.kasa_adi }} (Bakiye: {{ k.guncel_bakiye }} {{ k.para_birimi }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="belge">Belge / Fiş / Dekont Görseli</label>
+                <input type="file" id="belge" name="belge">
+            </div>
+
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama" rows="3" placeholder="Gider hakkında açıklama..."></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Gideri Kaydet</button>
+            <a href="{% url 'yonetim:gider_liste' %}" class="btn btn-secondary">Vazgeç</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

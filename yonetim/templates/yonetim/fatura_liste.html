@@ -1,0 +1,79 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Faturalar - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Gelen ve Giden Faturalar{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:fatura_ekle' %}" class="btn btn-primary">+ Yeni Fatura Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Toplam Gelen Fatura (Alış/Gider)</span>
+        <span class="summary-value">{{ toplam_gelen|floatformat:2 }} TL</span>
+    </div>
+    <div class="summary-card summary-success">
+        <span class="summary-label">Toplam Giden Fatura (Satış/Gelir)</span>
+        <span class="summary-value">{{ toplam_giden|floatformat:2 }} TL</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Fatura Listesi</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fatura No</th>
+                    <th>Tür</th>
+                    <th>Cari Hesap</th>
+                    <th>Tarih</th>
+                    <th>Vade Tarihi</th>
+                    <th class="text-right">Matrah</th>
+                    <th class="text-right">KDV</th>
+                    <th class="text-right">Toplam Tutar</th>
+                    <th>Durum</th>
+                    <th>Dosya</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in faturalar %}
+                <tr>
+                    <td><strong>{{ f.fatura_no }}</strong></td>
+                    <td>
+                        <span class="badge {% if f.tur == 'gelen' %}badge-warning{% else %}badge-info{% endif %}">
+                            {{ f.get_tur_display }}
+                        </span>
+                    </td>
+                    <td>{{ f.cari_hesap.unvan }}</td>
+                    <td>{{ f.tarih|date:"d.m.Y" }}</td>
+                    <td>{{ f.vade_tarihi|date:"d.m.Y"|default:"-" }}</td>
+                    <td class="text-right amount">{{ f.matrah|floatformat:2 }} TL</td>
+                    <td class="text-right amount text-muted">{{ f.kdv_tutari|floatformat:2 }} TL (%{{ f.kdv_orani }})</td>
+                    <td class="text-right amount"><strong>{{ f.toplam_tutar|floatformat:2 }} TL</strong></td>
+                    <td>
+                        <span class="badge {% if f.durum == 'odendi' %}badge-success{% elif f.durum == 'kismi_odendi' %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ f.get_durum_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if f.fatura_dosyasi %}
+                        <a href="{{ f.fatura_dosyasi.url }}" target="_blank" class="badge badge-secondary">PDF/Dosya</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="empty-state">Henüz fatura kaydı bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Çek/Senet Ekle - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni Çek / Senet Kaydı{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:ceksenet_liste' %}" class="btn btn-secondary">Listeye Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card form-card form-card-wide">
+    <div class="card-header">
+        <h2>Evrak Bilgileri</h2>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="tur">Evrak Türü *</label>
+                    <select id="tur" name="tur" required>
+                        {% for deger, etiket in tur_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="yon">Evrak Yönü *</label>
+                    <select id="yon" name="yon" required>
+                        {% for deger, etiket in yon_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="portfoy_no">Portföy / Seri No *</label>
+                    <input type="text" id="portfoy_no" name="portfoy_no" required placeholder="Örn: ÇK-2026-001">
+                </div>
+                <div class="form-group">
+                    <label for="cari_hesap">İlgili Cari Hesap *</label>
+                    <select id="cari_hesap" name="cari_hesap" required>
+                        <option value="">Cari Hesap Seçiniz...</option>
+                        {% for c in cariler %}
+                        <option value="{{ c.id }}">{{ c.unvan }} ({{ c.get_tur_display }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="tutar">Tutar (TL) *</label>
+                    <input type="number" step="0.01" id="tutar" name="tutar" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="vade_tarihi">Vade Tarihi *</label>
+                    <input type="date" id="vade_tarihi" name="vade_tarihi" required>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="keside_tarihi">Keşide / Düzenleme Tarihi *</label>
+                    <input type="date" id="keside_tarihi" name="keside_tarihi" value="{{ bugun|date:'Y-m-d' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="durum">Durum</label>
+                    <select id="durum" name="durum">
+                        {% for deger, etiket in durum_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="banka_sube">Banka / Şube Bilgisi</label>
+                <input type="text" id="banka_sube" name="banka_sube" placeholder="Örn: Garanti BBVA - Kadıköy Şubesi">
+            </div>
+
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama" rows="3" placeholder="Evrak veya ciro bilgileri..."></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:ceksenet_liste' %}" class="btn btn-secondary">Vazgeç</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Çek ve Senet Takibi - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Çek & Senet Takibi{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:ceksenet_ekle' %}" class="btn btn-primary">+ Yeni Çek / Senet Ekle</a>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-success">
+        <span class="summary-label">Toplam Alınan Evrak (Tahsil Edilecek)</span>
+        <span class="summary-value">{{ toplam_alinan|floatformat:2 }} TL</span>
+    </div>
+    <div class="summary-card summary-danger">
+        <span class="summary-label">Toplam Verilen Evrak (Ödenecek)</span>
+        <span class="summary-value">{{ toplam_verilen|floatformat:2 }} TL</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Çek ve Senet Portföyü</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Portföy / Seri No</th>
+                    <th>Tür</th>
+                    <th>Yön</th>
+                    <th>İlgili Cari</th>
+                    <th>Vade Tarihi</th>
+                    <th>Banka / Şube</th>
+                    <th class="text-right">Tutar</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in belgeler %}
+                <tr>
+                    <td><strong>{{ b.portfoy_no }}</strong></td>
+                    <td><span class="badge badge-secondary">{{ b.get_tur_display }}</span></td>
+                    <td>
+                        <span class="badge {% if b.yon == 'alinan' %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ b.get_yon_display }}
+                        </span>
+                    </td>
+                    <td>{{ b.cari_hesap.unvan }}</td>
+                    <td><strong>{{ b.vade_tarihi|date:"d.m.Y" }}</strong></td>
+                    <td>{{ b.banka_sube|default:"-" }}</td>
+                    <td class="text-right amount"><strong>{{ b.tutar|floatformat:2 }} TL</strong></td>
+                    <td>
+                        <span class="badge {% if b.durum == 'tahsil_edildi' %}badge-success{% elif b.durum == 'portfoyde' %}badge-info{% elif b.durum == 'ciro_edildi' %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ b.get_durum_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="empty-state">Henüz kayıtlı çek veya senet bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,21 @@
 from django.contrib import admin
 
-from .models import Alacak, Butce, Fis, HaftalikPlan, Odeme, Stok, VergiAyarlari
+from .models import (
+    Alacak,
+    Butce,
+    CariHesap,
+    CekSenet,
+    Fatura,
+    Fis,
+    GiderKategorisi,
+    HaftalikPlan,
+    IsletmeGideri,
+    Kasa,
+    KasaHareketi,
+    Odeme,
+    Stok,
+    VergiAyarlari,
+)
 
 
 @admin.register(VergiAyarlari)
@@ -53,3 +68,50 @@ class FisAdmin(admin.ModelAdmin):
     list_display = ('id', 'tutar', 'tarih', 'kategori', 'butce')
     list_filter = ('tarih', 'kategori')
     search_fields = ('kategori', 'aciklama')
+
+
+@admin.register(CariHesap)
+class CariHesapAdmin(admin.ModelAdmin):
+    list_display = ('id', 'unvan', 'tur', 'yetkili', 'telefon', 'guncel_bakiye')
+    list_filter = ('tur',)
+    search_fields = ('unvan', 'yetkili', 'vergi_no')
+
+
+@admin.register(Kasa)
+class KasaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'kasa_adi', 'para_birimi', 'guncel_bakiye')
+    search_fields = ('kasa_adi',)
+
+
+@admin.register(GiderKategorisi)
+class GiderKategorisiAdmin(admin.ModelAdmin):
+    list_display = ('id', 'ad', 'aciklama')
+    search_fields = ('ad',)
+
+
+@admin.register(IsletmeGideri)
+class IsletmeGideriAdmin(admin.ModelAdmin):
+    list_display = ('id', 'kategori', 'tutar', 'kdv_orani', 'odeme_tarihi', 'kasa')
+    list_filter = ('kategori', 'odeme_tarihi')
+    search_fields = ('kategori__ad', 'aciklama')
+
+
+@admin.register(Fatura)
+class FaturaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'fatura_no', 'tur', 'cari_hesap', 'tarih', 'toplam_tutar', 'durum')
+    list_filter = ('tur', 'durum', 'tarih')
+    search_fields = ('fatura_no', 'cari_hesap__unvan')
+
+
+@admin.register(KasaHareketi)
+class KasaHareketiAdmin(admin.ModelAdmin):
+    list_display = ('id', 'kasa', 'islem_turu', 'tutar', 'tarih', 'cari_hesap')
+    list_filter = ('islem_turu', 'tarih')
+    search_fields = ('kasa__kasa_adi', 'aciklama')
+
+
+@admin.register(CekSenet)
+class CekSenetAdmin(admin.ModelAdmin):
+    list_display = ('id', 'tur', 'yon', 'portfoy_no', 'cari_hesap', 'tutar', 'vade_tarihi', 'durum')
+    list_filter = ('tur', 'yon', 'durum', 'vade_tarihi')
+    search_fields = ('portfoy_no', 'cari_hesap__unvan', 'banka_sube')

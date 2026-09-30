@@ -1,0 +1,71 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Kasa Hareketi - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Kasa Hareketi İşle{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:kasa_liste' %}" class="btn btn-secondary">Kasaya Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Hareket Detayları</h2>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="kasa">İlgili Kasa / Hesap *</label>
+                    <select id="kasa" name="kasa" required>
+                        <option value="">Seçiniz...</option>
+                        {% for k in kasalar %}
+                        <option value="{{ k.id }}">{{ k.kasa_adi }} (Bakiye: {{ k.guncel_bakiye }} {{ k.para_birimi }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="islem_turu">İşlem Türü *</label>
+                    <select id="islem_turu" name="islem_turu" required>
+                        {% for deger, etiket in islem_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="tutar">Tutar (TL) *</label>
+                    <input type="number" step="0.01" id="tutar" name="tutar" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="tarih">İşlem Tarihi *</label>
+                    <input type="date" id="tarih" name="tarih" value="{{ bugun|date:'Y-m-d' }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cari_hesap">İlişkili Cari Hesap (Opsiyonel)</label>
+                <select id="cari_hesap" name="cari_hesap">
+                    <option value="">Cari Yok / Genel Hareket</option>
+                    {% for c in cariler %}
+                    <option value="{{ c.id }}">{{ c.unvan }} ({{ c.get_tur_display }})</option>
+                    {% endfor %}
+                </select>
+                <span class="field-hint">Cari seçilirse ilgili carinin bakiyesi otomatik güncellenir.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama" rows="3" placeholder="Örn: Havale ile müşteri tahsilatı..."></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Hareketi Kaydet</button>
+            <a href="{% url 'yonetim:kasa_liste' %}" class="btn btn-secondary">Vazgeç</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

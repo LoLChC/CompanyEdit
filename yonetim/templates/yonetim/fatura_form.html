@@ -1,0 +1,101 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Fatura Ekle - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Yeni Fatura Oluştur{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:fatura_liste' %}" class="btn btn-secondary">Listeye Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card form-card form-card-wide">
+    <div class="card-header">
+        <h2>Fatura Detayları</h2>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="fatura_no">Fatura No *</label>
+                    <input type="text" id="fatura_no" name="fatura_no" required placeholder="Örn: GIB202600000001">
+                </div>
+                <div class="form-group">
+                    <label for="tur">Fatura Türü *</label>
+                    <select id="tur" name="tur" required>
+                        {% for deger, etiket in tur_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="cari_hesap">Cari Hesap *</label>
+                <select id="cari_hesap" name="cari_hesap" required>
+                    <option value="">Cari Hesap Seçiniz...</option>
+                    {% for c in cariler %}
+                    <option value="{{ c.id }}">{{ c.unvan }} ({{ c.get_tur_display }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="tarih">Fatura Tarihi *</label>
+                    <input type="date" id="tarih" name="tarih" value="{{ bugun|date:'Y-m-d' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="vade_tarihi">Vade Tarihi</label>
+                    <input type="date" id="vade_tarihi" name="vade_tarihi">
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="matrah">Matrah (KDV Hariç Tutar TL) *</label>
+                    <input type="number" step="0.01" id="matrah" name="matrah" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="kdv_orani">KDV Oranı (%)</label>
+                    <input type="number" step="0.01" id="kdv_orani" name="kdv_orani" value="{{ varsayilan_kdv }}">
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="durum">Ödeme Durumu</label>
+                    <select id="durum" name="durum">
+                        {% for deger, etiket in durum_secenekleri %}
+                        <option value="{{ deger }}">{{ etiket }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="kasa">Ödeme Kasası (Ödendiyse)</label>
+                    <select id="kasa" name="kasa">
+                        <option value="">Kasa Hareketi Oluşturma</option>
+                        {% for k in kasalar %}
+                        <option value="{{ k.id }}">{{ k.kasa_adi }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fatura_dosyasi">Fatura Dosyası / PDF</label>
+                <input type="file" id="fatura_dosyasi" name="fatura_dosyasi">
+            </div>
+
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama" rows="3" placeholder="Fatura ürün/hizmet açıklaması..."></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Faturayı Kaydet</button>
+            <a href="{% url 'yonetim:fatura_liste' %}" class="btn btn-secondary">Vazgeç</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

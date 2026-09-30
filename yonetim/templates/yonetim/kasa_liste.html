@@ -1,0 +1,107 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Kasalar ve Banka Hesapları - Şirket Yönetim Paneli{% endblock %}
+{% block page_title %}Kasa & Banka Yönetimi{% endblock %}
+
+{% block header_actions %}
+<div class="header-actions">
+    <a href="{% url 'yonetim:kasa_hareket_ekle' %}" class="btn btn-secondary">+ Kasa Hareketi Ekle</a>
+    <a href="{% url 'yonetim:kasa_ekle' %}" class="btn btn-primary">+ Yeni Kasa / Banka Ekle</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="summary-grid">
+    <div class="summary-card summary-primary">
+        <span class="summary-label">Toplam Hesap/Kasa Sayısı</span>
+        <span class="summary-value">{{ kasalar|length }}</span>
+    </div>
+    <div class="summary-card summary-success">
+        <span class="summary-label">Toplam Nakit & Banka Varlığı</span>
+        <span class="summary-value">{{ toplam_kasa|floatformat:2 }} TL</span>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2>Kasalar ve Banka Hesapları</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Kasa / Banka Adı</th>
+                    <th>Para Birimi</th>
+                    <th>Açıklama</th>
+                    <th class="text-right">Başlangıç Bakiyesi</th>
+                    <th class="text-right">Güncel Bakiye</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for kasa in kasalar %}
+                <tr>
+                    <td><strong>{{ kasa.kasa_adi }}</strong></td>
+                    <td><span class="badge badge-secondary">{{ kasa.para_birimi }}</span></td>
+                    <td>{{ kasa.aciklama|default:"-" }}</td>
+                    <td class="text-right amount">{{ kasa.baslangic_bakiyesi|floatformat:2 }} {{ kasa.para_birimi }}</td>
+                    <td class="text-right amount {% if kasa.guncel_bakiye >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        <strong>{{ kasa.guncel_bakiye|floatformat:2 }} {{ kasa.para_birimi }}</strong>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-state">Henüz tanımlı kasa veya banka hesabı bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Son Kasa Hareketleri</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Kasa</th>
+                    <th>İşlem Türü</th>
+                    <th>İlişkili Cari / Fatura / Gider</th>
+                    <th>Açıklama</th>
+                    <th class="text-right">Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hareket in hareketler %}
+                <tr>
+                    <td>{{ hareket.tarih|date:"d.m.Y" }}</td>
+                    <td><strong>{{ hareket.kasa.kasa_adi }}</strong></td>
+                    <td>
+                        <span class="badge {% if hareket.islem_turu == 'giris' %}badge-success{% else %}badge-danger{% endif %}">
+                            {{ hareket.get_islem_turu_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if hareket.cari_hesap %}Cari: {{ hareket.cari_hesap.unvan }}<br>{% endif %}
+                        {% if hareket.fatura %}Fatura: {{ hareket.fatura.fatura_no }}<br>{% endif %}
+                        {% if hareket.isletme_gideri %}Gider: {{ hareket.isletme_gideri.kategori.ad }}{% endif %}
+                        {% if not hareket.cari_hesap and not hareket.fatura and not hareket.isletme_gideri %}-{% endif %}
+                    </td>
+                    <td>{{ hareket.aciklama|default:"-" }}</td>
+                    <td class="text-right amount {% if hareket.islem_turu == 'giris' %}text-success{% else %}text-danger{% endif %}">
+                        {% if hareket.islem_turu == 'giris' %}+{% else %}-{% endif %}{{ hareket.tutar|floatformat:2 }} TL
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state">Henüz kayıtlı bir kasa hareketi bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
