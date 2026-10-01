@@ -459,3 +459,195 @@
 
 # 2026-10-01 17:44:10.214966
 +/exit
+
+# 2026-10-01 23:47:24.523098
++n
+
+# 2026-10-01 23:47:39.448531
++yu(Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned) ; (& c:\Users\lolch\Desktop\CompanyEdit\venv\Scripts\Activate.ps1)
+
+# 2026-10-01 23:47:47.860049
++/clear
+
+# 2026-10-01 23:48:10.533389
++sayfaları iphone 18 içinde uyumlu bir sayfa düzeni oluşturacak hale getirimisin
+
+# 2026-10-01 23:48:19.632680
++cls
+
+# 2026-10-01 23:48:22.386106
++/exit
+
+# 2026-10-01 23:49:17.803727
++n
+
+# 2026-10-01 23:50:22.658068
++Mevcut Django şirket yönetim panelimizi modern mobil cihazlar ve özellikle yeni nesil iPhone ekranları için tam uyumlu (responsive & mobile-first polish) hale getir.
++
++Kritik Mobil & iOS Gereksinimleri:
++1. `yonetim/templates/yonetim/base.html`:
++   - Viewport meta etiketini safe-area desteğiyle güncelle:
++     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
++   - iOS web app çubuğu için:
++     <meta name="apple-mobile-web-app-capable" content="yes">
++     <meta name="apple-mobile-web-app-status-bar-style" content="default">
++   - Küçük ekranlarda sol menüyü (sidebar) gizleyen/açan pratik bir mobil hamburger menü (toggle butonu) ve alt navigasyon çubuğu mantığı ekle.
++
++2. `yonetim/static/yonetim/css/style.css`:
++   - Ekran yüksekliği için `100vh` yerine Dynamic Island ve Safari alt barına uyumlu `min-height: 100dvh` kullan.
++   - Ekran kenarlıklarına Safe-Area padding tanımla:
++     padding-top: max(16px, env(safe-area-inset-top));
++     padding-bottom: max(16px, env(safe-area-inset-bottom));
++     padding-left: max(16px, env(safe-area-inset-left));
++     padding-right: max(16px, env(safe-area-inset-right));
++   - Tablolar mobilde taşma yapmasın: Tüm tabloları yatay kaydırılabilir (.table-responsive / overflow-x: auto) container içine sar ve -webkit-overflow-scrolling: touch ekle.
++   - Form alanları ve butonlar mobilde minimum 44px dokunma yüksekliğine (touch target) sahip olsun; mobilde form elemanlarına tıklandığında Safari'nin istenmeyen yakınlaştırma (auto-zoom) yapmasını engellemek için font-size minimum 16px olsun.
++   - Kart gridleri (.portfolio-kpi-grid, .weekly-calendar-grid vb.) mobilde tek sütuna veya yatay kaydırılabilir ajanda kartlarına düzgünce katlansın (`@media (max-width: 768px)` ve `@media (max-width: 480px)`).
++
++3. Şablon Düzenlemeleri:
++   - Tüm form sayfalarındaki (`*_form.html`) butonlar ve inputlar mobilde tam genişlik (width: 100%) alacak şekilde responsive düzene kavuşsun.
++   - `finans_portfoy.html` ve `haftalik_plan_liste.html` ekranlarında KPI kartları küçük ekranda 2x2 veya tek sütun olarak düzgün yerleşsin.
++
++Kodları kısaltmadan, dosyaları eksiksiz tam bloklar halinde düzenle.
+
+# 2026-10-01 23:50:25.375175
++a
+
+# 2026-10-01 23:50:41.495467
++/exit
+
+# 2026-10-01 23:53:39.424995
++s
+
+# 2026-10-01 23:53:42.322275
++Mevcut Django şirket yönetim panelimizi modern mobil cihazlar ve özellikle yeni nesil iPhone ekranları için tam uyumlu (responsive & mobile-first polish) hale getir.
++
++Kritik Mobil & iOS Gereksinimleri:
++1. `yonetim/templates/yonetim/base.html`:
++   - Viewport meta etiketini safe-area desteğiyle güncelle:
++     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
++   - iOS web app çubuğu için:
++     <meta name="apple-mobile-web-app-capable" content="yes">
++     <meta name="apple-mobile-web-app-status-bar-style" content="default">
++   - Küçük ekranlarda sol menüyü (sidebar) gizleyen/açan pratik bir mobil hamburger menü (toggle butonu) ve alt navigasyon çubuğu mantığı ekle.
++
++2. `yonetim/static/yonetim/css/style.css`:
++   - Ekran yüksekliği için `100vh` yerine Dynamic Island ve Safari alt barına uyumlu `min-height: 100dvh` kullan.
++   - Ekran kenarlıklarına Safe-Area padding tanımla:
++     padding-top: max(16px, env(safe-area-inset-top));
++     padding-bottom: max(16px, env(safe-area-inset-bottom));
++     padding-left: max(16px, env(safe-area-inset-left));
++     padding-right: max(16px, env(safe-area-inset-right));
++   - Tablolar mobilde taşma yapmasın: Tüm tabloları yatay kaydırılabilir (.table-responsive / overflow-x: auto) container içine sar ve -webkit-overflow-scrolling: touch ekle.
++   - Form alanları ve butonlar mobilde minimum 44px dokunma yüksekliğine (touch target) sahip olsun; mobilde form elemanlarına tıklandığında Safari'nin istenmeyen yakınlaştırma (auto-zoom) yapmasını engellemek için font-size minimum 16px olsun.
++   - Kart gridleri (.portfolio-kpi-grid, .weekly-calendar-grid vb.) mobilde tek sütuna veya yatay kaydırılabilir ajanda kartlarına düzgünce katlansın (`@media (max-width: 768px)` ve `@media (max-width: 480px)`).
++
++3. Şablon Düzenlemeleri:
++   - Tüm form sayfalarındaki (`*_form.html`) butonlar ve inputlar mobilde tam genişlik (width: 100%) alacak şekilde responsive düzene kavuşsun.
++   - `finans_portfoy.html` ve `haftalik_plan_liste.html` ekranlarında KPI kartları küçük ekranda 2x2 veya tek sütun olarak düzgün yerleşsin.
++
++Kodları kısaltmadan, dosyaları eksiksiz tam bloklar halinde düzenle.
+
+# 2026-10-01 23:53:43.772938
++a
+
+# 2026-10-01 23:53:59.846492
++/exit
+
+# 2026-10-01 23:59:23.824284
++n
+
+# 2026-10-01 23:59:26.846504
++hi
+
+# 2026-10-01 23:59:37.293583
++cls
+
+# 2026-10-01 23:59:40.804260
++/clear
+
+# 2026-10-02 00:00:22.130233
++n
+
+# 2026-10-02 00:00:22.233831
++hi
+
+# 2026-10-02 00:03:20.972114
++n
+
+# 2026-10-02 00:03:23.039794
++hi
+
+# 2026-10-02 00:06:51.276847
++d
+
+# 2026-10-02 00:06:53.344540
++hi
+
+# 2026-10-02 00:15:05.922702
++d
+
+# 2026-10-02 00:15:07.382263
++hi
+
+# 2026-10-02 00:17:25.955480
++n
+
+# 2026-10-02 00:17:28.065949
++hi
+
+# 2026-10-02 00:19:04.839931
++/exit
+
+# 2026-10-02 00:19:27.580158
++d
+
+# 2026-10-02 00:19:29.824306
++/exit
+
+# 2026-10-02 00:19:40.859286
++n
+
+# 2026-10-02 00:19:48.959313
++Mevcut Django şirket yönetim panelimizi modern mobil cihazlar ve özellikle yeni nesil iPhone ekranları için tam uyumlu (responsive & mobile-first polish) hale getir.
++
++Kritik Mobil & iOS Gereksinimleri:
++1. `yonetim/templates/yonetim/base.html`:
++   - Viewport meta etiketini safe-area desteğiyle güncelle:
++     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
++   - iOS web app çubuğu için:
++     <meta name="apple-mobile-web-app-capable" content="yes">
++     <meta name="apple-mobile-web-app-status-bar-style" content="default">
++   - Küçük ekranlarda sol menüyü (sidebar) gizleyen/açan pratik bir mobil hamburger menü (toggle butonu) ve alt navigasyon çubuğu mantığı ekle.
++
++2. `yonetim/static/yonetim/css/style.css`:
++   - Ekran yüksekliği için `100vh` yerine Dynamic Island ve Safari alt barına uyumlu `min-height: 100dvh` kullan.
++   - Ekran kenarlıklarına Safe-Area padding tanımla:
++     padding-top: max(16px, env(safe-area-inset-top));
++     padding-bottom: max(16px, env(safe-area-inset-bottom));
++     padding-left: max(16px, env(safe-area-inset-left));
++     padding-right: max(16px, env(safe-area-inset-right));
++   - Tablolar mobilde taşma yapmasın: Tüm tabloları yatay kaydırılabilir (.table-responsive / overflow-x: auto) container içine sar ve -webkit-overflow-scrolling: touch ekle.
++   - Form alanları ve butonlar mobilde minimum 44px dokunma yüksekliğine (touch target) sahip olsun; mobilde form elemanlarına tıklandığında Safari'nin istenmeyen yakınlaştırma (auto-zoom) yapmasını engellemek için font-size minimum 16px olsun.
++   - Kart gridleri (.portfolio-kpi-grid, .weekly-calendar-grid vb.) mobilde tek sütuna veya yatay kaydırılabilir ajanda kartlarına düzgünce katlansın (`@media (max-width: 768px)` ve `@media (max-width: 480px)`).
++
++3. Şablon Düzenlemeleri:
++   - Tüm form sayfalarındaki (`*_form.html`) butonlar ve inputlar mobilde tam genişlik (width: 100%) alacak şekilde responsive düzene kavuşsun.
++   - `finans_portfoy.html` ve `haftalik_plan_liste.html` ekranlarında KPI kartları küçük ekranda 2x2 veya tek sütun olarak düzgün yerleşsin.
++
++Kodları kısaltmadan, dosyaları eksiksiz tam bloklar halinde düzenle.
+
+# 2026-10-02 00:19:51.955445
++a
+
+# 2026-10-02 00:24:13.402197
++y
+
+# 2026-10-02 00:28:37.700729
++a
+
+# 2026-10-02 00:36:29.778830
++y
+
+# 2026-10-02 00:44:04.979691
++/exit
