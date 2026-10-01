@@ -33,11 +33,11 @@
             <div class="form-row-2">
                 <div class="form-group">
                     <label for="tutar">Tutar (TL) *</label>
-                    <input type="number" step="0.01" id="tutar" name="tutar" required placeholder="0.00">
+                    <input type="number" step="0.01" id="tutar" name="tutar" required placeholder="0.00" inputmode="decimal">
                 </div>
                 <div class="form-group">
                     <label for="kdv_orani">KDV Oranı (%)</label>
-                    <input type="number" step="0.01" id="kdv_orani" name="kdv_orani" value="{{ varsayilan_kdv }}">
+                    <input type="number" step="0.01" id="kdv_orani" name="kdv_orani" value="{{ varsayilan_kdv }}" inputmode="decimal">
                 </div>
             </div>
 

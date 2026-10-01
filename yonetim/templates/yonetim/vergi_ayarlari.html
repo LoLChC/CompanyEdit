@@ -17,20 +17,20 @@
         <div class="form-grid">
             <div class="form-group">
                 <label for="kdv_orani">KDV Oranı (%)</label>
-                <input type="number" id="kdv_orani" name="kdv_orani" step="0.01" min="0" max="100" value="{{ ayar.kdv_orani }}" required>
+                <input type="number" id="kdv_orani" name="kdv_orani" step="0.01" min="0" max="100" value="{{ ayar.kdv_orani }}" required inputmode="decimal">
                 <span class="field-hint">Alacak ve ödeme tutarlarından KDV hesaplanır</span>
             </div>
             <div class="form-group">
                 <label for="gelir_vergisi_orani">Gelir Vergisi Oranı (%)</label>
-                <input type="number" id="gelir_vergisi_orani" name="gelir_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.gelir_vergisi_orani }}">
+                <input type="number" id="gelir_vergisi_orani" name="gelir_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.gelir_vergisi_orani }}" inputmode="decimal">
             </div>
             <div class="form-group">
                 <label for="kurumlar_vergisi_orani">Kurumlar Vergisi Oranı (%)</label>
-                <input type="number" id="kurumlar_vergisi_orani" name="kurumlar_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.kurumlar_vergisi_orani }}">
+                <input type="number" id="kurumlar_vergisi_orani" name="kurumlar_vergisi_orani" step="0.01" min="0" max="100" value="{{ ayar.kurumlar_vergisi_orani }}" inputmode="decimal">
             </div>
             <div class="form-group">
                 <label for="stopaj_orani">Stopaj Oranı (%)</label>
-                <input type="number" id="stopaj_orani" name="stopaj_orani" step="0.01" min="0" max="100" value="{{ ayar.stopaj_orani }}">
+                <input type="number" id="stopaj_orani" name="stopaj_orani" step="0.01" min="0" max="100" value="{{ ayar.stopaj_orani }}" inputmode="decimal">
             </div>
             <div class="form-group">
                 <label class="checkbox-label">
