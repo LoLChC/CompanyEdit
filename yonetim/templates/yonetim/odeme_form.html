@@ -33,7 +33,7 @@
                 <label for="durum">Durum</label>
                 <select id="durum" name="durum" required>
                     {% for value, label in durum_secenekleri %}
-                    <option value="{{ value }}" {% if value == 'bekliyor' %}selected{% endif %}>{{ label }}</option>
+                    <option value="{{ value }}"{% if value == 'bekliyor' %} selected="selected"{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
                 <span class="field-hint">Ödendi olarak işaretlenen tutarlar bütçeden düşülür</span>
