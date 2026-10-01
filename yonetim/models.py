@@ -59,6 +59,7 @@ class Butce(models.Model):
         default=0,
     )
     son_islem_tarihi = models.DateField(
+        null=True,
         verbose_name='Son İşlem Tarihi',
         default=timezone.now,
     )
@@ -92,11 +93,13 @@ class Odeme(models.Model):
         verbose_name='Tutar (TL)',
     )
     islem_tarihi = models.DateField(
+        null=True, 
         verbose_name='İşlem Tarihi',
         default=timezone.now,
         help_text='Ödeme kaydının oluşturulduğu / işlemin yapıldığı tarih',
     )
     vade_tarihi = models.DateField(
+        null=True, 
         verbose_name='Ödeme Tarihi',
         help_text='Paranın ne zaman ödeneceği',
     )
@@ -147,13 +150,15 @@ class Alacak(models.Model):
         verbose_name='Tutar (TL)',
     )
     islem_tarihi = models.DateField(
+        null=True,
         verbose_name='İşlem Tarihi',
         default=timezone.now,
         help_text='Alacağın oluştuğu / kaydedildiği tarih',
     )
     tahsil_tarihi = models.DateField(
-        verbose_name='Tahsil Tarihi',
-        help_text='Paranın ne zaman alınacağı',
+        null=True, 
+        blank=True, 
+        verbose_name="Tahsil Tarihi"
     )
     kimden = models.CharField(
         max_length=200,
@@ -206,9 +211,11 @@ class HaftalikPlan(models.Model):
         default='',
     )
     baslangic_tarihi = models.DateField(
+        null=True,
         verbose_name='Başlangıç Tarihi',
     )
     bitis_tarihi = models.DateField(
+        null=True,
         verbose_name='Bitiş Tarihi',
     )
     durum = models.CharField(
@@ -249,6 +256,7 @@ class Stok(models.Model):
         default=0,
     )
     alim_tarihi = models.DateField(
+        null=True,
         verbose_name='Alım Tarihi',
         default=timezone.now,
     )
@@ -277,6 +285,7 @@ class Fis(models.Model):
         verbose_name='Tutar',
     )
     tarih = models.DateField(
+        null=True,
         verbose_name='Tarih',
         default=timezone.now,
     )
@@ -487,6 +496,7 @@ class IsletmeGideri(models.Model):
         verbose_name='KDV Oranı (%)',
     )
     odeme_tarihi = models.DateField(
+        null=True,
         default=timezone.now,
         verbose_name='Ödeme Tarihi',
     )
@@ -556,6 +566,7 @@ class Fatura(models.Model):
         verbose_name='Cari Hesap',
     )
     tarih = models.DateField(
+        null=True,
         default=timezone.now,
         verbose_name='Fatura Tarihi',
     )
@@ -648,6 +659,7 @@ class KasaHareketi(models.Model):
         verbose_name='Tutar (TL)',
     )
     tarih = models.DateField(
+        null=True,
         default=timezone.now,
         verbose_name='İşlem Tarihi',
     )
@@ -748,9 +760,11 @@ class CekSenet(models.Model):
         verbose_name='Tutar (TL)',
     )
     vade_tarihi = models.DateField(
+        null=True,
         verbose_name='Vade Tarihi',
     )
     keside_tarihi = models.DateField(
+        null=True,
         default=timezone.now,
         verbose_name='Keşide / Düzenleme Tarihi',
     )

@@ -49,3 +49,413 @@
 
 # 2026-09-30 20:06:41.973147
 +/exit
+
+# 2026-09-30 20:08:21.803768
++/help add
+
+# 2026-09-30 20:08:30.619035
++n
+
+# 2026-09-30 20:08:33.171584
++cls
+
+# 2026-09-30 20:09:16.207471
++/clear
+
+# 2026-09-30 20:09:18.622194
++/ls
+
+# 2026-09-30 20:10:41.106822
++/tokens
+
+# 2026-09-30 20:11:52.243064
++Mevcut Django şirket yönetim projemize yeni modüller ekleyerek sistemi muhasebe ve cari takip tarafında genişleteceğiz. Yine dışa bağımlılık olmadan, saf Django ve temiz custom yapıyla devam etmelisin. Kodları verirken hiçbir yeri "..." şeklinde kısaltma, tam ve eksiksiz kod blokları ver.
++
++Eklenecek Yeni Modüller ve Gereksinimler:
++
++Cari Hesap Yönetimi (Müşteri & Tedarikçi):
++
++CariHesap modeli: Ad/Unvan, Türü (Müşteri / Tedarikçi), Telefon, E-posta, Adres, Vergi Dairesi/No, Başlangıç Bakiyesi, Güncel Bakiye (Alacaklı/Borçlu durumu otomatik izlenebilecek).
++
++Kasa (Nakit/Banka Yönetimi):
++
++Kasa modeli: Kasa Adı (Örn: Merkez Kasa, Ziraat Bankası), Para Birimi, Güncel Bakiye.
++
++KasaHareketi modeli: İlgili Kasa, İşlem Türü (Giriş / Çıkış), Tutar, Tarih, Açıklama, İlişkili Cari/Gider (Opsiyonel).
++
++İşletme Giderleri:
++
++GiderKategorisi modeli: Kategori Adı (Örn: Kira, Elektrik, Personel, Yemek, Vergi vb.).
++
++IsletmeGideri modeli: Kategori, Tutar, KDV Oranı (%), Ödeme Tarihi, Hangi Kasadan Ödendiği, Açıklama, Belge/Fiş Görseli (Opsiyonel).
++
++Gelen / Giden Faturalar:
++
++Fatura modeli: Fatura No, Türü (Gelen Fatura / Giden Fatura), Cari Hesap (İlgili müşteri veya tedarikçi), Tarih, Vade Tarihi, Matrah (KDV Hariç Tutar), KDV Oranı, KDV Tutarı, Toplam Tutar, Durum (Ödendi / Bekliyor / Kısmi Ödendi), Fatura Dosyası/PDF (Opsiyonel).
++
++Çek / Senet Takibi:
++
++CekSenet modeli: Tür (Çek / Senet), Yön (Alınan / Verilen), Portföy No, Cari Hesap, Tutar, Vade Tarihi, Keşide Tarihi, Banka/Şube Bilgisi, Durum (Portföyde, Tahsil Edildi, Ciro Edildi, Karşılıksız/Protestolu).
++
++Yapılacak İşlemler:
++
++models.py içine bu modelleri eksiksiz ekle (ilişkili alanlar için ForeignKey tanımlarını doğru kur).
++
++views.py içinde her modül için listeleme ve ekleme/kaydetme fonksiyonlarını yaz. Faturalar veya kasa hareketleri girildiğinde cari bakiye veya kasa bakiyesini güncelleyen mantığı temiz bir şekilde koda dök.
++
++urls.py içine yeni sayfaların yönlendirmelerini tanımla.
++
++base.html dosyasındaki sol menüye (sidebar) bu yeni sayfaların linklerini ekle.
++
++Her yeni sayfa için tam HTML şablonlarını (Form + Tablo listeleme düzeninde) ver.
+
+# 2026-09-30 20:12:41.281974
++A
+
+# 2026-09-30 20:17:08.583112
++nnnnnnmno
+
+# 2026-09-30 20:17:11.256951
++no
+
+# 2026-09-30 20:17:16.596159
++/clear
+
+# 2026-09-30 20:17:23.571186
++/model gemini/gemini-3.8-flash
+
+# 2026-09-30 20:17:34.028475
++/ls
+
+# 2026-09-30 20:17:47.308888
++Mevcut Django şirket yönetim projemize yeni modüller ekleyerek sistemi muhasebe ve cari takip tarafında genişleteceğiz. Yine dışa bağımlılık olmadan, saf Django ve temiz custom yapıyla devam etmelisin. Kodları verirken hiçbir yeri "..." şeklinde kısaltma, tam ve eksiksiz kod blokları ver.
++
++Eklenecek Yeni Modüller ve Gereksinimler:
++
++Cari Hesap Yönetimi (Müşteri & Tedarikçi):
++
++CariHesap modeli: Ad/Unvan, Türü (Müşteri / Tedarikçi), Telefon, E-posta, Adres, Vergi Dairesi/No, Başlangıç Bakiyesi, Güncel Bakiye (Alacaklı/Borçlu durumu otomatik izlenebilecek).
++
++Kasa (Nakit/Banka Yönetimi):
++
++Kasa modeli: Kasa Adı (Örn: Merkez Kasa, Ziraat Bankası), Para Birimi, Güncel Bakiye.
++
++KasaHareketi modeli: İlgili Kasa, İşlem Türü (Giriş / Çıkış), Tutar, Tarih, Açıklama, İlişkili Cari/Gider (Opsiyonel).
++
++İşletme Giderleri:
++
++GiderKategorisi modeli: Kategori Adı (Örn: Kira, Elektrik, Personel, Yemek, Vergi vb.).
++
++IsletmeGideri modeli: Kategori, Tutar, KDV Oranı (%), Ödeme Tarihi, Hangi Kasadan Ödendiği, Açıklama, Belge/Fiş Görseli (Opsiyonel).
++
++Gelen / Giden Faturalar:
++
++Fatura modeli: Fatura No, Türü (Gelen Fatura / Giden Fatura), Cari Hesap (İlgili müşteri veya tedarikçi), Tarih, Vade Tarihi, Matrah (KDV Hariç Tutar), KDV Oranı, KDV Tutarı, Toplam Tutar, Durum (Ödendi / Bekliyor / Kısmi Ödendi), Fatura Dosyası/PDF (Opsiyonel).
++
++Çek / Senet Takibi:
++
++CekSenet modeli: Tür (Çek / Senet), Yön (Alınan / Verilen), Portföy No, Cari Hesap, Tutar, Vade Tarihi, Keşide Tarihi, Banka/Şube Bilgisi, Durum (Portföyde, Tahsil Edildi, Ciro Edildi, Karşılıksız/Protestolu).
++
++Yapılacak İşlemler:
++
++models.py içine bu modelleri eksiksiz ekle (ilişkili alanlar için ForeignKey tanımlarını doğru kur).
++
++views.py içinde her modül için listeleme ve ekleme/kaydetme fonksiyonlarını yaz. Faturalar veya kasa hareketleri girildiğinde cari bakiye veya kasa bakiyesini güncelleyen mantığı temiz bir şekilde koda dök.
++
++urls.py içine yeni sayfaların yönlendirmelerini tanımla.
++
++base.html dosyasındaki sol menüye (sidebar) bu yeni sayfaların linklerini ekle.
++
++Her yeni sayfa için tam HTML şablonlarını (Form + Tablo listeleme düzeninde) ver.
+
+# 2026-09-30 20:18:22.856484
++y
+
+# 2026-09-30 20:18:50.783170
++a
+
+# 2026-09-30 20:19:45.799327
++y
+
+# 2026-09-30 20:21:52.449252
++Eksik kalan views.py fonksiyonlarını, urls.py rotalarını ve yeni modüllerin tüm HTML şablonlarını (cari, kasa, gider, fatura, ceksenet listeleme ve form dosyalarını) yonetim/templates/yonetim/ altına eksiksiz ve tam kod olarak oluştur.
+
+# 2026-09-30 20:27:01.163244
++y
+
+# 2026-09-30 20:28:15.165598
++/save
+
+# 2026-09-30 20:28:19.220221
++/exit
+
+# 2026-09-30 20:38:44.166541
++y
+
+# 2026-09-30 20:39:49.676286
++/add yonetim/models.py yonetim/views.py yonetim/urls.py yonetim/admin.py yonetim/context_processors.py yonetim/templates/yonetim/base.html
+
+# 2026-09-30 20:40:09.392900
++/add **/*.py **/*.html **/*.css **/*.js
+
+# 2026-09-30 20:40:48.209405
++Mevcut Django projesinde bir önceki model tarafından yapılan hatalı ve yarım kalan tüm kodlamaları temizle, mimariyi saf Django ile baştan sona eksiksiz tamamla. 
++
++Kritik Düzeltmeler ve Kurallar:
++1. `yonetim/admin.py` içindeki mükerrer importları (örn: çift Alacak importu) ve eksik kayıtları düzelt.
++2. Dış kütüphane kullanma, minimal custom yapıya sadık kal.
++3. Kodları verirken hiçbir yeri "..." şeklinde kısaltma, tüm dosya bloklarını eksiksiz üret.
++
++Eklenecek / Düzeltilecek Modüller:
++
++1. Cari Hesap Yönetimi (Müşteri & Tedarikçi):
++- CariHesap modeli: Ad/Unvan, Türü (Müşteri / Tedarikçi), Telefon, E-posta, Adres, Vergi Dairesi/No, Başlangıç Bakiyesi, Güncel Bakiye (Alacaklı/Borçlu durumu izlenecek).
++
++2. Kasa (Nakit/Banka Yönetimi):
++- Kasa modeli: Kasa Adı (Örn: Merkez Kasa, Ziraat Bankası), Para Birimi, Güncel Bakiye.
++- KasaHareketi modeli: İlgili Kasa, İşlem Türü (Giriş / Çıkış), Tutar, Tarih, Açıklama, İlişkili Cari/Gider/Fatura.
++
++3. İşletme Giderleri:
++- GiderKategorisi modeli: Kategori Adı.
++- IsletmeGideri modeli: Kategori, Tutar, KDV Oranı (%), Ödeme Tarihi, Hangi Kasadan Ödendiği, Açıklama, Belge/Fiş Görseli.
++
++4. Gelen / Giden Faturalar:
++- Fatura modeli: Fatura No, Türü (Gelen / Giden), Cari Hesap, Tarih, Vade Tarihi, Matrah, KDV Oranı, KDV Tutarı, Toplam Tutar, Durum (Ödendi / Bekliyor / Kısmi Ödendi), Fatura Dosyası/PDF.
++
++5. Çek / Senet Takibi:
++- CekSenet modeli: Tür (Çek / Senet), Yön (Alınan / Verilen), Portföy No, Cari Hesap, Tutar, Vade Tarihi, Keşide Tarihi, Banka/Şube Bilgisi, Durum (Portföyde, Tahsil Edildi, Ciro Edildi, Karşılıksız/Protestolu).
++
++Yapılacak İşlemler:
++1. models.py: İlişkisel ForeignKey alanlarını düzgün kur ve save metotlarında veya views katmanında bakiye değişimlerini destekleyecek temiz bir yapı oluştur.
++2. views.py: Her modül için listeleme ve ekleme/düzenleme fonksiyonlarını yaz. Fatura veya Kasa Hareketi işlendiğinde Kasa bakiyesini ve Cari Hesap bakiyesini güncelleyen mantığı hatasız kodla.
++3. urls.py: Tüm yeni fonksiyonların path yönlendirmelerini eksiksiz tanımla.
++4. base.html: Sol sidebar menüsüne tüm yeni modüllerin bağlantılarını ekle.
++5. yonetim/templates/yonetim/ klasörü altına gereken tüm HTML şablonlarını (cari_liste.html, cari_form.html, kasa_liste.html, kasa_form.html, kasa_hareket_form.html, gider_liste.html, gider_form.html, fatura_liste.html, fatura_form.html, ceksenet_liste.html, ceksenet_form.html) tam kod olarak yaz.
+
+# 2026-09-30 20:56:00.307021
++Açıklama, yorum veya düşünce süreci yazma. Sadece doğrudan dosya düzenlemelerini uygula.
++
++Görevler:
++1. `yonetim/admin.py`: Mükerrer importları (çift Alacak vb.) temizle. Tüm modelleri (CariHesap, Kasa, GiderKategorisi, IsletmeGideri, Fatura, KasaHareketi, CekSenet) admin paneline kaydet.
++2. `yonetim/views.py`: Cari hesaplar, kasa hareketleri, işletme giderleri, faturalar ve çek/senet için listeleme ve ekleme fonksiyonlarını eksiksiz yaz. Bakiye güncellemelerini (tahsilat, ödeme, fatura kaydı) transaction güvenliğiyle işle.
++3. `yonetim/urls.py`: Yeni views fonksiyonlarının tüm url yönlendirmelerini (path) eksiksiz bağla.
++4. `yonetim/templates/yonetim/base.html`: Sidebar menüsüne Cari Hesaplar, Kasa & Banka, Faturalar, İşletme Giderleri ve Çek & Senet bağlantılarını ekle.
++5. `yonetim/templates/yonetim/` altına şu şablonları eksiksiz üret:
++   - cari_liste.html, cari_form.html
++   - kasa_liste.html, kasa_form.html, kasa_hareket_form.html
++   - gider_liste.html, gider_form.html
++   - fatura_liste.html, fatura_form.html
++   - ceksenet_liste.html, ceksenet_form.html
++
++Kodları hiçbir yerde '...' ile kesmeden tam dosya blokları halinde dosyalara yaz.
+
+# 2026-09-30 21:14:58.397484
++Y
+
+# 2026-09-30 22:02:56.624319
++d
+
+# 2026-09-30 22:03:00.053662
++Mevcut Django şirket yönetim projemizi iki kritik alanda modernize etmeni ve genişletmeni istiyorum:
++
++1. Haftalık Planlama (Takvim & Haftalık Çizelge Görünümü):
++- Mevcut `haftalik_plan_liste.html` sayfasını sıkıcı düz tablo yapısından çıkar.
++- Pazartesi'den Pazar'a haftanın 7 gününü kolonlar/kartlar halinde gösteren, modern bir haftalık takvim/çizelge (grid) görünümüne dönüştür.
++- Kullanıcı hafta seçimi (Önceki Hafta / Sonraki Hafta) yapabilmeli veya ilgili haftadaki görevleri/hedefleri günlere göre kartlar halinde görebilmeli.
++- Görev kartlarında durum rozetleri (Tamamlandı, Bekliyor), öncelik/tarih ve tek tıkla durumu tamamlama/değiştirme butonu yer almalı.
++
++2. Şirket Finansal Portföy & Muhasebe Özeti (Yönetici Dashboard):
++- Yeni bir sayfa ekle: `finans_portfoy` (views.py, urls.py ve templates/yonetim/finans_portfoy.html).
++- Bu ekran şirketin tüm finansal hareketlerini ve anlık sağlığını tek bir portföy paneli olarak sunmalı:
++  a) Varlık & Kasa Özeti: Tüm nakit kasalar ve bankaların toplam mevcudu, döviz/TL dağılımı.
++  b) Cari Alacak / Borç Dengesi: Müşterilerden toplam tahsil edilecek alacak vs. Tedarikçilere ödenecek toplam borç ve net işletme farkı.
++  c) Bekleyen Evrak Portföyü: Vadesi yaklaşan çek/senetler (Tahsil edilecekler vs. Ödenecekler).
++  d) Aylık Gelir - Gider - Net Kâr Tablosu: Faturalar ve işletme giderleri baz alınarak hesaplanan operasyonel kâr/zarar göstergesi.
++  e) Son Finansal Hareketler Akışı: Kasadan çıkan son ödemeler, kesilen son faturalar ve tahsilatların birleşik kronolojik akışı.
++
++Kurallar ve Uygulama Adımları:
++1. Dış kütüphane bağımlılığı ekleme. Temiz Django ORM (aggregate, Sum), saf Python datetime ve custom HTML/CSS flex/grid düzenleri kullan.
++2. `yonetim/views.py`: 
++   - `haftalik_plan_liste` fonksiyonunu seçili haftanın günlerini ve görevlerini gruplayarak gönderecek şekilde güncelle.
++   - `finans_portfoy` görünümünü yazıp tüm finansal toplamları, kârlılık oranlarını ve son hareketleri context olarak ilet.
++3. `yonetim/urls.py`: Yeni finans portföyü rotasını ekle (`path('portfoy/', views.finans_portfoy, name='finans_portfoy')`).
+
+# 2026-09-30 22:03:02.983716
++a
+
+# 2026-09-30 22:05:11.554422
++/exit
+
+# 2026-09-30 22:05:30.765821
++d
+
+# 2026-09-30 22:05:33.011399
++/exit
+
+# 2026-09-30 22:06:18.221383
++n
+
+# 2026-09-30 22:06:22.115156
++Mevcut Django şirket yönetim projemizi iki kritik alanda modernize etmeni ve genişletmeni istiyorum:
++
++1. Haftalık Planlama (Takvim & Haftalık Çizelge Görünümü):
++- Mevcut `haftalik_plan_liste.html` sayfasını sıkıcı düz tablo yapısından çıkar.
++- Pazartesi'den Pazar'a haftanın 7 gününü kolonlar/kartlar halinde gösteren, modern bir haftalık takvim/çizelge (grid) görünümüne dönüştür.
++- Kullanıcı hafta seçimi (Önceki Hafta / Sonraki Hafta) yapabilmeli veya ilgili haftadaki görevleri/hedefleri günlere göre kartlar halinde görebilmeli.
++- Görev kartlarında durum rozetleri (Tamamlandı, Bekliyor), öncelik/tarih ve tek tıkla durumu tamamlama/değiştirme butonu yer almalı.
++
++2. Şirket Finansal Portföy & Muhasebe Özeti (Yönetici Dashboard):
++- Yeni bir sayfa ekle: `finans_portfoy` (views.py, urls.py ve templates/yonetim/finans_portfoy.html).
++- Bu ekran şirketin tüm finansal hareketlerini ve anlık sağlığını tek bir portföy paneli olarak sunmalı:
++  a) Varlık & Kasa Özeti: Tüm nakit kasalar ve bankaların toplam mevcudu, döviz/TL dağılımı.
++  b) Cari Alacak / Borç Dengesi: Müşterilerden toplam tahsil edilecek alacak vs. Tedarikçilere ödenecek toplam borç ve net işletme farkı.
++  c) Bekleyen Evrak Portföyü: Vadesi yaklaşan çek/senetler (Tahsil edilecekler vs. Ödenecekler).
++  d) Aylık Gelir - Gider - Net Kâr Tablosu: Faturalar ve işletme giderleri baz alınarak hesaplanan operasyonel kâr/zarar göstergesi.
++  e) Son Finansal Hareketler Akışı: Kasadan çıkan son ödemeler, kesilen son faturalar ve tahsilatların birleşik kronolojik akışı.
++
++Kurallar ve Uygulama Adımları:
++1. Dış kütüphane bağımlılığı ekleme. Temiz Django ORM (aggregate, Sum), saf Python datetime ve custom HTML/CSS flex/grid düzenleri kullan.
++2. `yonetim/views.py`: 
++   - `haftalik_plan_liste` fonksiyonunu seçili haftanın günlerini ve görevlerini gruplayarak gönderecek şekilde güncelle.
++   - `finans_portfoy` görünümünü yazıp tüm finansal toplamları, kârlılık oranlarını ve son hareketleri context olarak ilet.
++3. `yonetim/urls.py`: Yeni finans portföyü rotasını ekle (`path('portfoy/', views.finans_portfoy, name='finans_portfoy')`).
+
+# 2026-09-30 22:06:25.600361
++a
+
+# 2026-09-30 22:16:30.237795
++[System.Environment]::SetEnvironmentVariable('OPENAI_API_KEY', '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', 'User')
+
+# 2026-09-30 22:16:33.579028
++y
+
+# 2026-09-30 22:25:54.801440
++exit
+
+# 2026-09-30 22:25:59.064177
++/exit
+
+# 2026-09-30 22:26:37.387424
++n
+
+# 2026-09-30 22:26:49.217443
++Mevcut Django sirket yonetim projemizi iki alanda genislet:
++
++1. Haftalik Planlama (Takvim & Haftalik Cizelge):
++- yonetim/templates/yonetim/haftalik_plan_liste.html dosyasini Pazartesi'den Pazar'a 7 gunu sutunlar halinde gosteren haftalik takvim cizelgesine donustur.
++- Onceki hafta ve sonraki hafta secimi yapilabilsin.
++- Gorev kartlarinda durumu tamamlandi/bekliyor olarak degistiren buton olsun.
++
++2. Sirket Finansal Portfoyu (Yonetici Dashboard):
++- Yeni sayfa ekle: finans_portfoy.
++- Tum kasa ve bankalarin toplam bakiyesini, cari alacak/borc dengesini, bekleyen cek/senet toplamlarini ve faturalar ile isletme giderleri arasindaki operasyonel kar/zarar farkini gostersin.
++- Son kasa hareketlerini tablo halinde listelesin.
++
++Yapilacak Dosya Degisiklikleri:
++- yonetim/views.py: haftalik_plan_liste, haftalik_plan_durum_degistir ve finans_portfoy fonksiyonlarini eksiksiz yaz.
++- yonetim/urls.py: portfoy/ ve durum degistirme rotalarini ekle.
++- yonetim/templates/yonetim/base.html: Sidebar menusune Finansal Portfoy ve Haftalik Takvim baglantilarini ekle.
++- yonetim/static/yonetim/css/style.css: Takvim sutunlari ve dashboard kartlari icin gerekli CSS stillerini ekle.
++- haftalik_plan_liste.html ve finans_portfoy.html sablonlarini eksiksiz uret.
++
++Kodlari hicbir yerde kisaltmadan tam bloklar halinde yaz.
+
+# 2026-09-30 22:26:51.228211
++y
+
+# 2026-09-30 22:27:11.968439
++/tokens
+
+# 2026-09-30 22:40:32.440903
++/exit
+
+# 2026-09-30 22:41:13.698643
++no
+
+# 2026-09-30 22:41:19.253882
++Mevcut Django sirket yonetim projemizi iki alanda genislet:
++
++1. Haftalik Planlama (Takvim & Haftalik Cizelge):
++- yonetim/templates/yonetim/haftalik_plan_liste.html dosyasini Pazartesi'den Pazar'a 7 gunu sutunlar halinde gosteren haftalik takvim cizelgesine donustur.
++- Onceki hafta ve sonraki hafta secimi yapilabilsin.
++- Gorev kartlarinda durumu tamamlandi/bekliyor olarak degistiren buton olsun.
++
++2. Sirket Finansal Portfoyu (Yonetici Dashboard):
++- Yeni sayfa ekle: finans_portfoy.
++- Tum kasa ve bankalarin toplam bakiyesini, cari alacak/borc dengesini, bekleyen cek/senet toplamlarini ve faturalar ile isletme giderleri arasindaki operasyonel kar/zarar farkini gostersin.
++- Son kasa hareketlerini tablo halinde listelesin.
++
++Yapilacak Dosya Degisiklikleri:
++- yonetim/views.py: haftalik_plan_liste, haftalik_plan_durum_degistir ve finans_portfoy fonksiyonlarini eksiksiz yaz.
++- yonetim/urls.py: portfoy/ ve durum degistirme rotalarini ekle.
++- yonetim/templates/yonetim/base.html: Sidebar menusune Finansal Portfoy ve Haftalik Takvim baglantilarini ekle.
++- yonetim/static/yonetim/css/style.css: Takvim sutunlari ve dashboard kartlari icin gerekli CSS stillerini ekle.
++- haftalik_plan_liste.html ve finans_portfoy.html sablonlarini eksiksiz uret.
++
++Kodlari hicbir yerde kisaltmadan tam bloklar halinde yaz.
+
+# 2026-09-30 22:41:22.113548
++a
+
+# 2026-09-30 22:58:42.201626
++"y
+
+# 2026-09-30 22:58:44.006645
++y
+
+# 2026-10-01 17:09:55.365468
++/exit
+
+# 2026-10-01 17:30:52.123047
++d
+
+# 2026-10-01 17:32:30.681090
++Mevcut Django projemizi SQLite'tan Neon PostgreSQL veritabanına bağlamak ve Render.com üzerinde sorunsuz deploy edilmeye hazır hale getirmek için gerekli tüm yapılandırmaları yap.
++
++Görevler:
++1. `requirements.txt`:
++   - PostgreSQL sürücüsü için `psycopg2-binary` ve veritabanı URL çözümlemesi için `dj-database-url` paketlerini ekle.
++   - Production sunucusu için `gunicorn` ve statik dosya sunumu için `whitenoise` paketlerini ekle.
++
++2. `sirket_panel/settings.py`:
++   - `import os` ve `import dj_database_url` ekle.
++   - `DATABASES` yapılandırmasını ortam değişkeninden (`DATABASE_URL`) okuyacak şekilde güncelle. Eğer `DATABASE_URL` tanımlı değilse yedek olarak şu Neon PostgreSQL bağlantı adresini kullan:
++     postgresql://neondb_owner:npg_SpvmEo4utaG9@ep-holy-silence-b2r92vjj-pooler.c-6.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
++   - `MIDDLEWARE` içine `django.middleware.security.SecurityMiddleware` satırının hemen altına `'whitenoise.middleware.WhiteNoiseMiddleware',` satırını ekle.
++   - `STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')` ve `STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'` tanımlarını ekle.
++   - `ALLOWED_HOSTS = ['*']` veya Render domainlerini kabul edecek dinamik yapı kur.
++
++3. Render Dağıtım Dosyaları (Ana dizine ekle):
++   - `build.sh`:
++     ```bash
++     #!/usr/bin/env bash
++     set -o errexit
++     pip install -r requirements.txt
++     python manage.py collectstatic --no-input
++     python manage.py migrate
++     ```
++   - `render.yaml`:
++     ```yaml
++     services:
++       - type: web
++         name: sirket-yonetim-paneli
++         env: python
++         buildCommand: "./build.sh"
++         startCommand: "gunicorn sirket_panel.wsgi:application"
++         envVars:
++           - key: PYTHON_VERSION
++             value: 3.12.0
++           - key: DATABASE_URL
++             value: postgresql://neondb_owner:npg_SpvmEo4utaG9@ep-holy-silence-b2r92vjj-pooler.c-6.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
++     ```
++
++Kodları hiçbir yerde '...' ile kesmeden tam dosya blokları halinde dosyalara yaz.
+
+# 2026-10-01 17:32:33.417856
++a
+
+# 2026-10-01 17:39:39.031718
++y
+
+# 2026-10-01 17:44:10.214966
++/exit
