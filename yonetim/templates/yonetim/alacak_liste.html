@@ -1,6 +1,6 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Alacaklar | Şirket Yönetim Paneli{% endblock %}
+{% block title %}Alacaklar | EfeZade Group - Şirket Yönetimi{% endblock %}
 {% block page_title %}Alacaklar{% endblock %}
 
 {% block header_actions %}
@@ -27,6 +27,7 @@
                         <th>Durum</th>
                         <th>Açıklama</th>
                         <th>Bütçe</th>
+                        <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +47,17 @@
                         </td>
                         <td>{{ alacak.aciklama|default:"—" }}</td>
                         <td>{% if alacak.butce %}#{{ alacak.butce.id }}{% else %}—{% endif %}</td>
+                        <td>
+                            <form action="{% url 'yonetim:alacak_durum_degistir' alacak.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary" style="padding:2px 5px; font-size:12px;">Durum</button>
+                            </form>
+                            <a href="{% url 'yonetim:alacak_duzenle' alacak.id %}" class="btn btn-sm btn-outline-primary" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Düzenle</a>
+                            <form action="{% url 'yonetim:alacak_sil' alacak.id %}" method="post" style="display:inline;" onsubmit="return confirm('Bu alacak kaydını ve ilgili bakiyeleri silmek istediğinize emin misiniz?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Sil</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

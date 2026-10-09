@@ -13,9 +13,15 @@ from .models import (
     Kasa,
     KasaHareketi,
     Odeme,
-    Stok,
+    TekUrunAyari,
     VergiAyarlari,
 )
+
+
+@admin.register(TekUrunAyari)
+class TekUrunAyariAdmin(admin.ModelAdmin):
+    list_display = ('id', 'urun_adi', 'alis_fiyati', 'satis_fiyati')
+    search_fields = ('urun_adi',)
 
 
 @admin.register(VergiAyarlari)
@@ -39,16 +45,16 @@ class ButceAdmin(admin.ModelAdmin):
 
 @admin.register(Odeme)
 class OdemeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tutar', 'islem_tarihi', 'vade_tarihi', 'kime', 'durum', 'butce')
+    list_display = ('id', 'tutar', 'islem_tarihi', 'vade_tarihi', 'kime', 'cari_hesap', 'durum', 'butce')
     list_filter = ('durum', 'islem_tarihi')
-    search_fields = ('kime', 'aciklama')
+    search_fields = ('kime', 'aciklama', 'cari_hesap__unvan')
 
 
 @admin.register(Alacak)
 class AlacakAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tutar', 'islem_tarihi', 'tahsil_tarihi', 'kimden', 'durum', 'butce')
+    list_display = ('id', 'tutar', 'islem_tarihi', 'tahsil_tarihi', 'kimden', 'cari_hesap', 'durum', 'butce')
     list_filter = ('durum', 'islem_tarihi')
-    search_fields = ('kimden', 'aciklama')
+    search_fields = ('kimden', 'aciklama', 'cari_hesap__unvan')
 
 
 @admin.register(HaftalikPlan)
@@ -57,17 +63,12 @@ class HaftalikPlanAdmin(admin.ModelAdmin):
     list_filter = ('durum',)
 
 
-@admin.register(Stok)
-class StokAdmin(admin.ModelAdmin):
-    list_display = ('id', 'urun_adi', 'adet_miktar', 'birim', 'alis_fiyati', 'alim_tarihi', 'son_guncelleme')
-    search_fields = ('urun_adi',)
-
 
 @admin.register(Fis)
 class FisAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tutar', 'tarih', 'kategori', 'butce')
-    list_filter = ('tarih', 'kategori')
-    search_fields = ('kategori', 'aciklama')
+    list_display = ('id', 'fis_turu', 'fis_no', 'tarih', 'cari_hesap', 'aciklama', 'tutar', 'kdv_orani', 'odeme_durumu')
+    list_filter = ('fis_turu', 'odeme_durumu', 'tarih')
+    search_fields = ('fis_no', 'cari_hesap__unvan', 'aciklama')
 
 
 @admin.register(CariHesap)

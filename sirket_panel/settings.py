@@ -9,7 +9,7 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-company-panel-default-key-1234567890abcdef')
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
@@ -64,12 +64,18 @@ WSGI_APPLICATION = 'sirket_panel.wsgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+import os
+import dj_database_url
+
+NEON_DATABASE_URL = "postgresql://neondb_owner:npg_SpvmEo4utaG9@ep-holy-silence-b2r92vjj-pooler.c-6.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+DATABASE_URL = os.environ.get('DATABASE_URL') or NEON_DATABASE_URL
+
 DATABASES = {
     'default': dj_database_url.parse(
         DATABASE_URL,
         conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True,
+        ssl_require=True
     )
 }
 

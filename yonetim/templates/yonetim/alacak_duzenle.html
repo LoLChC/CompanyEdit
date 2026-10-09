@@ -1,0 +1,59 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Alacak Düzenle | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Alacak Düzenle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Alacak Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:alacak_duzenle' alacak.id %}">
+        {% csrf_token %}
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="tutar">Toplam Tutar (TL)</label>
+                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required value="{{ alacak.tutar|stringformat:'f' }}" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="islem_tarihi">İşlem Tarihi</label>
+                <input type="date" id="islem_tarihi" name="islem_tarihi" value="{{ alacak.islem_tarihi|date:'Y-m-d' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="tahsil_tarihi">Tahsil Tarihi</label>
+                <input type="date" id="tahsil_tarihi" name="tahsil_tarihi" value="{{ alacak.tahsil_tarihi|date:'Y-m-d' }}">
+            </div>
+            <div class="form-group">
+                <label for="kimden">Kimden</label>
+                <input type="text" id="kimden" name="kimden" maxlength="200" required value="{{ alacak.kimden }}">
+            </div>
+            <div class="form-group">
+                <label for="durum">Durum</label>
+                <select id="durum" name="durum" required>
+                    {% for value, label in durum_secenekleri %}
+                    <option value="{{ value }}"{% if value == alacak.durum %} selected="selected"{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" name="aciklama">{{ alacak.aciklama }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="butce">İlgili Bütçe</label>
+                <select id="butce" name="butce">
+                    <option value="">— Tüm bütçe hesabına dahil —</option>
+                    {% for butce in butceler %}
+                    <option value="{{ butce.id }}" {% if alacak.butce_id == butce.id %}selected{% endif %}>#{{ butce.id }} — {{ butce.aciklama|default:"Bütçe" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:alacak_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

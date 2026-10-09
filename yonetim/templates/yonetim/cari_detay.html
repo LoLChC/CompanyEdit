@@ -1,0 +1,58 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Cari Ekstre - {{ cari.unvan }} | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Cari Hesap Detayı & Ekstre{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:cari_liste' %}" class="btn btn-secondary">Carilere Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem; text-align: center; padding: 2rem;">
+    <h2>{{ cari.unvan }}</h2>
+    <p class="text-muted">{{ cari.get_tur_display }}</p>
+    
+    <div style="margin-top: 1rem;">
+        <span style="font-size: 2.5rem; font-weight: bold; color: {% if cari.guncel_bakiye > 0 %}var(--danger-color){% elif cari.guncel_bakiye < 0 %}var(--success-color){% else %}var(--text-color){% endif %};">
+            {{ cari.guncel_bakiye }} TL
+        </span>
+    </div>
+    <div style="margin-top: 0.5rem; font-size: 1.1rem; font-weight: 500;">
+        Durum: {{ cari.bakiye_durumu }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Cari Ekstre (Hareket Geçmişi)</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Tür</th>
+                    <th>Açıklama</th>
+                    <th style="text-align: right;">Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in hareketler %}
+                <tr>
+                    <td>{{ h.tarih|date:"d.m.Y" }}</td>
+                    <td><span class="badge badge-{{ h.renk }}">{{ h.tur }}</span></td>
+                    <td>{{ h.aciklama }}</td>
+                    <td style="text-align: right; font-weight: bold; color: {% if h.renk == 'success' %}var(--success-color){% else %}var(--danger-color){% endif %};">
+                        {% if h.borc_alacak == 'borc' %}-{% else %}+{% endif %} {{ h.tutar }} TL
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Bu cariye ait henüz hareket bulunmamaktadır.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

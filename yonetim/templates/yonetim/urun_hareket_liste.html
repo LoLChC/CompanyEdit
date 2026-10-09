@@ -1,0 +1,62 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Ürün Hareketleri | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Ürün Alış / Satış Hareketleri{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:urun_hareket_ekle' %}" class="btn btn-primary">Alış / Satış Yap</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Geçmiş İşlemler</h2>
+        <span class="text-muted">{{ hareketler|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if hareketler %}
+        <div class="table-wrap table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>İşlem Tarihi</th>
+                        <th>İşlem Türü</th>
+                        <th>Ürün</th>
+                        <th>Cari Hesap</th>
+                        <th class="text-right">Adet</th>
+                        <th class="text-right">Birim Fiyat</th>
+                        <th class="text-right">Toplam Tutar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hareket in hareketler %}
+                    <tr>
+                        <td>{{ hareket.id }}</td>
+                        <td>{{ hareket.tarih|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if hareket.islem_turu == 'alis' %}
+                            <span class="badge badge-warning">Alış</span>
+                            {% else %}
+                            <span class="badge badge-success">Satış</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ hareket.urun.urun_adi }}</td>
+                        <td>{{ hareket.cari_hesap.unvan }}</td>
+                        <td class="text-right">{{ hareket.adet }} {{ hareket.urun.birim }}</td>
+                        <td class="text-right amount">{{ hareket.birim_fiyat }} TL</td>
+                        <td class="text-right amount font-weight-bold">{{ hareket.toplam_tutar }} TL</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz herhangi bir ürün alım veya satım hareketi bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:urun_hareket_ekle' %}">İlk işlemi gerçekleştirin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

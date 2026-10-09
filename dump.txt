@@ -1,0 +1,32 @@
+=== ALACAK KAYITLARI ===
+ID: 22 | Kimden: Yağlıdere ÇPL | Tutar: 875.00 | Aciklama: 50 adet ürün satıldı
+ID: 21 | Kimden: Yağlıdere Şehit Enver Lisesi | Tutar: 1050.00 | Aciklama: 60 Adet ürün satıldı
+ID: 20 | Kimden: Yağlıdere Anadolu Lisesi | Tutar: 700.00 | Aciklama: 40 adet ürün satıldı
+ID: 19 | Kimden: Yağlıdere Şehit Enver Lisesi | Tutar: 1050.00 | Aciklama: 60 adet ürün satıldı
+ID: 18 | Kimden: Yağlıdere ÇPL | Tutar: 875.00 | Aciklama: 50 adet ürün satıldı
+ID: 17 | Kimden: Yağlıdere Anadolu Lisesi | Tutar: 1050.00 | Aciklama: Yağlıdere anadolu 60 ürün satıldı
+ID: 16 | Kimden: Town House Coffe More | Tutar: 300.00 | Aciklama: 
+ID: 15 | Kimden: Fikret Dizdar | Tutar: 1225.00 | Aciklama: 70 Adet ürün satıldı
+ID: 14 | Kimden: Garipoğlu Dondurma | Tutar: 1580.00 | Aciklama: Muhammet Garipoğlu
+ID: 13 | Kimden: Coffe Date | Tutar: 935.00 | Aciklama: Eren Kara
+ID: 12 | Kimden: Luna Coffee | Tutar: 2404.00 | Aciklama: Selami Müdür
+ID: 11 | Kimden: Carrave Coffee | Tutar: 2225.00 | Aciklama: Yunus Kara 
+ID: 10 | Kimden: Samet Demir | Tutar: 2000.00 | Aciklama: 
+ID: 9 | Kimden: Akın Elevli | Tutar: 2000.00 | Aciklama: 
+ID: 8 | Kimden: Uğur Beşikci | Tutar: 25000.00 | Aciklama: 
+ID: 7 | Kimden: Abdulsamet Gemici | Tutar: 140000.00 | Aciklama: 
+ID: 6 | Kimden: Yağlıdere Anadolu Lisesi | Tutar: 875.00 | Aciklama: 50 Adet Ürün Satıldı
+ID: 5 | Kimden: Yağlıdere ÇPL | Tutar: 875.00 | Aciklama: 50 Adet Ürün Satıldı
+ID: 4 | Kimden: Yağlıdere Anadolu Lisesi | Tutar: 1050.00 | Aciklama: 60 Adet Ürün satıldı
+ID: 3 | Kimden: Yağlıdere Şehit Enver | Tutar: 927.50 | Aciklama: 53 Adet ürün satıldı
+ID: 2 | Kimden: Yağlıdere ÇPL | Tutar: 875.00 | Aciklama: 50 Adet ürün satıldı
+ID: 1 | Kimden: Ahmet Bey (Espiye ÇPL) | Tutar: 1312.50 | Aciklama: 75 Adet ürün ahmet beye verildi
+
+=== ODEME KAYITLARI ===
+ID: 7 | Kime: American Express | Tutar: 5000.00 | Aciklama: Kart Ödemesi
+ID: 6 | Kime: Akbank | Tutar: 20000.00 | Aciklama: Banka Ödemesi
+ID: 5 | Kime: HalkBank | Tutar: 68000.00 | Aciklama: Kart Ödemesi
+ID: 4 | Kime: Ceren Hüseyinoğlu | Tutar: 50000.00 | Aciklama: 
+ID: 3 | Kime: Antepli Tatlı | Tutar: 6000.00 | Aciklama: Ustasına verilecek
+ID: 2 | Kime: İlker | Tutar: 50000.00 | Aciklama: 
+ID: 1 | Kime: Hasan Tös | Tutar: 25000.00 | Aciklama: 

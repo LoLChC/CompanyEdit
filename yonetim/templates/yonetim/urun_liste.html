@@ -1,0 +1,55 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Ürünler | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Ürünler{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:urun_hareket_ekle' %}" class="btn btn-secondary">Alış / Satış Yap</a>
+<a href="{% url 'yonetim:urun_ekle' %}" class="btn btn-primary">+ Yeni Ürün</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Ürün ve Stok Listesi</h2>
+        <span class="text-muted">{{ urunler|length }} kayıt</span>
+    </div>
+    <div class="card-body">
+        {% if urunler %}
+        <div class="table-wrap table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Ürün Adı</th>
+                        <th>Birim</th>
+                        <th class="text-right">Alış Fiyatı (TL)</th>
+                        <th class="text-right">Satış Fiyatı (TL)</th>
+                        <th class="text-right">Mevcut Stok</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for urun in urunler %}
+                    <tr>
+                        <td>{{ urun.id }}</td>
+                        <td><strong>{{ urun.urun_adi }}</strong></td>
+                        <td>{{ urun.birim }}</td>
+                        <td class="text-right amount">{{ urun.alis_fiyati }} TL</td>
+                        <td class="text-right amount">{{ urun.satis_fiyati }} TL</td>
+                        <td class="text-right amount {% if urun.mevcut_stok <= 0 %}text-danger{% else %}text-success{% endif %}">
+                            <strong>{{ urun.mevcut_stok }}</strong>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Henüz kayıtlı ürün bulunmuyor.</p>
+            <p><a href="{% url 'yonetim:urun_ekle' %}">İlk ürünü ekleyin</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -79,6 +79,33 @@ class Butce(models.Model):
         return f'Bütçe: {self.guncel_butce} TL ({self.son_islem_tarihi})'
 
 
+class TekUrunAyari(models.Model):
+    urun_adi = models.CharField(
+        max_length=200,
+        default='Ana Ürün / Hizmet',
+        verbose_name='Ürün / Hizmet Adı'
+    )
+    alis_fiyati = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name='Sabit Alış Fiyatı'
+    )
+    satis_fiyati = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name='Sabit Satış Fiyatı'
+    )
+
+    class Meta:
+        verbose_name = 'Tek Ürün Ayarı'
+        verbose_name_plural = 'Tek Ürün Ayarları'
+
+    def __str__(self):
+        return self.urun_adi
+
+
 class Odeme(models.Model):
     DURUM_ODENDI = 'odendi'
     DURUM_BEKLIYOR = 'bekliyor'
@@ -107,6 +134,14 @@ class Odeme(models.Model):
         max_length=200,
         verbose_name='Kime',
     )
+    cari_hesap = models.ForeignKey(
+        'CariHesap',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Cari Hesap',
+        related_name='odemeler',
+    )
     aciklama = models.TextField(
         verbose_name='Açıklama',
         blank=True,
@@ -119,7 +154,7 @@ class Odeme(models.Model):
         verbose_name='Durum',
     )
     butce = models.ForeignKey(
-        Butce,
+        'Butce',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -164,6 +199,14 @@ class Alacak(models.Model):
         max_length=200,
         verbose_name='Kimden',
     )
+    cari_hesap = models.ForeignKey(
+        'CariHesap',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Cari Hesap',
+        related_name='alacaklar',
+    )
     aciklama = models.TextField(
         verbose_name='Açıklama',
         blank=True,
@@ -176,7 +219,7 @@ class Alacak(models.Model):
         verbose_name='Durum',
     )
     butce = models.ForeignKey(
-        Butce,
+        'Butce',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -234,69 +277,67 @@ class HaftalikPlan(models.Model):
         return self.baslik
 
 
-class Stok(models.Model):
-    urun_adi = models.CharField(
-        max_length=200,
-        verbose_name='Ürün Adı',
-    )
-    adet_miktar = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        verbose_name='Adet / Miktar',
-    )
-    birim = models.CharField(
-        max_length=50,
-        verbose_name='Birim',
-        default='Adet',
-    )
-    alis_fiyati = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        verbose_name='Alış Fiyatı (TL)',
-        default=0,
-    )
-    alim_tarihi = models.DateField(
-        null=True,
-        verbose_name='Alım Tarihi',
-        default=timezone.now,
-    )
-    son_guncelleme = models.DateTimeField(
-        verbose_name='Son Güncelleme',
-        auto_now=True,
-    )
-
-    class Meta:
-        verbose_name = 'Stok'
-        verbose_name_plural = 'Stoklar'
-        ordering = ['urun_adi']
-
-    def __str__(self):
-        return f'{self.urun_adi} ({self.adet_miktar} {self.birim})'
-
-    @property
-    def toplam_maliyet(self):
-        return self.adet_miktar * self.alis_fiyati
-
-
 class Fis(models.Model):
-    tutar = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        verbose_name='Tutar',
+    DURUM_ODENDI = 'odendi'
+    DURUM_BEKLIYOR = 'bekliyor'
+    DURUM_SECENEKLERI = [
+        (DURUM_ODENDI, 'Ödendi'),
+        (DURUM_BEKLIYOR, 'Bekliyor'),
+    ]
+
+    FIS_ALIS = 'alis'
+    FIS_SATIS = 'satis'
+    FIS_TURU_SECENEKLERI = [
+        (FIS_ALIS, 'Alış Fişi / Masraf'),
+        (FIS_SATIS, 'Satış Fişi'),
+    ]
+
+    fis_turu = models.CharField(
+        max_length=10,
+        choices=FIS_TURU_SECENEKLERI,
+        default=FIS_ALIS,
+        verbose_name='Fiş Türü',
+    )
+    fis_no = models.CharField(
+        max_length=60,
+        verbose_name='Fiş Numarası',
+        blank=True,
+        default='',
     )
     tarih = models.DateField(
         null=True,
         verbose_name='Tarih',
         default=timezone.now,
     )
-    kategori = models.CharField(
-        max_length=100,
-        verbose_name='Kategori',
+    cari_hesap = models.ForeignKey(
+        'CariHesap',
+        on_delete=models.SET_NULL,
+        related_name='fisler',
+        verbose_name='Cari Hesap',
+        null=True,
+        blank=True,
     )
     aciklama = models.TextField(
-        verbose_name='Açıklama',
+        verbose_name='Alınan Mal/Hizmet Açıklaması',
         blank=True,
         default='',
+    )
+    tutar = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        verbose_name='Tutar (TL)',
+    )
+    kdv_orani = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=20,
+        verbose_name='KDV Oranı (%)',
+    )
+    odeme_durumu = models.CharField(
+        max_length=20,
+        choices=DURUM_SECENEKLERI,
+        default=DURUM_BEKLIYOR,
+        verbose_name='Ödeme Durumu',
     )
     fis_gorseli = models.ImageField(
         upload_to='fisler/%Y/%m/',
@@ -305,7 +346,7 @@ class Fis(models.Model):
         null=True,
     )
     butce = models.ForeignKey(
-        Butce,
+        'Butce',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -319,7 +360,8 @@ class Fis(models.Model):
         ordering = ['-tarih', '-id']
 
     def __str__(self):
-        return f'{self.kategori} - {self.tutar} TL'
+        return f'{self.get_fis_turu_display()} {self.fis_no} - {self.tutar} TL'
+
 
 
 class CariHesap(models.Model):
@@ -479,7 +521,7 @@ class GiderKategorisi(models.Model):
 
 class IsletmeGideri(models.Model):
     kategori = models.ForeignKey(
-        GiderKategorisi,
+        'GiderKategorisi',
         on_delete=models.PROTECT,
         related_name='giderler',
         verbose_name='Gider Kategorisi',
@@ -501,7 +543,7 @@ class IsletmeGideri(models.Model):
         verbose_name='Ödeme Tarihi',
     )
     kasa = models.ForeignKey(
-        Kasa,
+        'Kasa',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -560,7 +602,7 @@ class Fatura(models.Model):
         verbose_name='Fatura Türü',
     )
     cari_hesap = models.ForeignKey(
-        CariHesap,
+        'CariHesap',
         on_delete=models.PROTECT,
         related_name='faturalar',
         verbose_name='Cari Hesap',
@@ -643,7 +685,7 @@ class KasaHareketi(models.Model):
     ]
 
     kasa = models.ForeignKey(
-        Kasa,
+        'Kasa',
         on_delete=models.CASCADE,
         related_name='hareketler',
         verbose_name='İlgili Kasa / Banka',
@@ -669,7 +711,7 @@ class KasaHareketi(models.Model):
         verbose_name='Açıklama',
     )
     cari_hesap = models.ForeignKey(
-        CariHesap,
+        'CariHesap',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -677,7 +719,7 @@ class KasaHareketi(models.Model):
         verbose_name='İlişkili Cari Hesap',
     )
     isletme_gideri = models.ForeignKey(
-        IsletmeGideri,
+        'IsletmeGideri',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -685,7 +727,7 @@ class KasaHareketi(models.Model):
         verbose_name='İlişkili İşletme Gideri',
     )
     fatura = models.ForeignKey(
-        Fatura,
+        'Fatura',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -749,7 +791,7 @@ class CekSenet(models.Model):
         verbose_name='Portföy / Seri No',
     )
     cari_hesap = models.ForeignKey(
-        CariHesap,
+        'CariHesap',
         on_delete=models.PROTECT,
         related_name='cek_senetler',
         verbose_name='İlgili Cari Hesap',

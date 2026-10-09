@@ -1,6 +1,6 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Fişler | Şirket Yönetim Paneli{% endblock %}
+{% block title %}Fişler | EfeZade Group - Şirket Yönetimi{% endblock %}
 {% block page_title %}Fişler{% endblock %}
 
 {% block header_actions %}
@@ -19,33 +19,53 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Tarih</th>
-                        <th>Kategori</th>
+                        <th>Fiş Numarası</th>
+                        <th>Tedarikçi Cari</th>
+                        <th>Mal/Hizmet Açıklaması</th>
                         <th class="text-right">Tutar</th>
-                        <th>Açıklama</th>
+                        <th>KDV</th>
+                        <th>Durum</th>
                         <th>Görsel</th>
-                        <th>Bütçe</th>
+                        <th>İşlemler</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for fis in fisler %}
                     <tr>
-                        <td>{{ fis.id }}</td>
                         <td>{{ fis.tarih|date:"d.m.Y" }}</td>
-                        <td>{{ fis.kategori }}</td>
-                        <td class="text-right amount">{{ fis.tutar }} TL</td>
+                        <td>{{ fis.fis_no|default:"—" }}</td>
+                        <td>
+                            {% if fis.cari_hesap %}
+                            <a href="{% url 'yonetim:cari_detay' fis.cari_hesap.id %}">{{ fis.cari_hesap.unvan }}</a>
+                            {% else %}—{% endif %}
+                        </td>
                         <td>{{ fis.aciklama|default:"—"|truncatechars:60 }}</td>
+                        <td class="text-right amount">{{ fis.tutar }} TL</td>
+                        <td>%{{ fis.kdv_orani }}</td>
+                        <td>
+                            <span class="badge {% if fis.odeme_durumu == 'odendi' %}badge-success{% else %}badge-warning{% endif %}">
+                                {{ fis.get_odeme_durumu_display }}
+                            </span>
+                        </td>
                         <td>
                             {% if fis.fis_gorseli %}
-                            <a href="{{ fis.fis_gorseli.url }}" target="_blank" rel="noopener">
-                                <img src="{{ fis.fis_gorseli.url }}" alt="Fiş #{{ fis.id }}" class="thumbnail">
-                            </a>
+                            <a href="{{ fis.fis_gorseli.url }}" target="_blank" rel="noopener">Görsel</a>
                             {% else %}
                             —
                             {% endif %}
                         </td>
-                        <td>{% if fis.butce %}#{{ fis.butce.id }}{% else %}—{% endif %}</td>
+                        <td>
+                            <form action="{% url 'yonetim:fis_durum_degistir' fis.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary" style="padding:2px 5px; font-size:12px;">Durum</button>
+                            </form>
+                            <a href="{% url 'yonetim:fis_duzenle' fis.id %}" class="btn btn-sm btn-outline-primary" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Düzenle</a>
+                            <form action="{% url 'yonetim:fis_sil' fis.id %}" method="post" style="display:inline;" onsubmit="return confirm('Bu fiş kaydını ve ilgili bakiyeleri silmek istediğinize emin misiniz?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Sil</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

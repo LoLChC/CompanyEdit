@@ -1,0 +1,104 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Alış / Satış İşlemi - EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Yeni Alış / Satış İşlemi{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'yonetim:urun_hareket_liste' %}" class="btn btn-secondary">İptal / Geri Dön</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" action="{% url 'yonetim:urun_hareket_ekle' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="islem_turu">İşlem Türü</label>
+            <select id="islem_turu" name="islem_turu" required class="form-control" onchange="hesapla()">
+                <option value="">Seçiniz</option>
+                {% for deger, etiket in islem_secenekleri %}
+                <option value="{{ deger }}">{{ etiket }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="urun">Ürün</label>
+            <select id="urun" name="urun" required class="form-control" onchange="hesapla()">
+                <option value="">Seçiniz</option>
+                {% for u in urunler %}
+                <option value="{{ u.id }}" data-alis="{{ u.alis_fiyati }}" data-satis="{{ u.satis_fiyati }}">
+                    {{ u.urun_adi }} (Mevcut: {{ u.mevcut_stok }} {{ u.birim }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="cari_hesap">Cari Hesap</label>
+            <select id="cari_hesap" name="cari_hesap" required class="form-control">
+                <option value="">Seçiniz</option>
+                {% for c in cariler %}
+                <option value="{{ c.id }}">{{ c.unvan }} ({{ c.get_tur_display }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="adet">Adet / Miktar</label>
+            <input type="number" step="0.01" id="adet" name="adet" required class="form-control" oninput="hesapla()">
+        </div>
+        
+        <div class="form-group">
+            <label for="tarih">İşlem Tarihi</label>
+            <input type="date" id="tarih" name="tarih" value="{{ bugun|date:'Y-m-d' }}" required class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="aciklama">Açıklama</label>
+            <textarea id="aciklama" name="aciklama" rows="3" class="form-control"></textarea>
+        </div>
+
+        <div class="summary-box" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+            <p><strong>Birim Fiyat: </strong><span id="goster_birim_fiyat">0.00</span> TL</p>
+            <p style="font-size: 1.2em;"><strong>Toplam Tutar: </strong><span id="goster_toplam_tutar">0.00</span> TL</p>
+        </div>
+        <br>
+        
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </form>
+</div>
+
+<script>
+    function hesapla() {
+        const islemTuru = document.getElementById('islem_turu').value;
+        const urunSelect = document.getElementById('urun');
+        const adetInput = document.getElementById('adet').value;
+        
+        const birimFiyatSpan = document.getElementById('goster_birim_fiyat');
+        const toplamTutarSpan = document.getElementById('goster_toplam_tutar');
+        
+        if (!islemTuru || !urunSelect.value) {
+            birimFiyatSpan.innerText = '0.00';
+            toplamTutarSpan.innerText = '0.00';
+            return;
+        }
+        
+        const selectedOption = urunSelect.options[urunSelect.selectedIndex];
+        let birimFiyat = 0;
+        
+        if (islemTuru === 'alis') {
+            birimFiyat = parseFloat(selectedOption.getAttribute('data-alis')) || 0;
+        } else if (islemTuru === 'satis') {
+            birimFiyat = parseFloat(selectedOption.getAttribute('data-satis')) || 0;
+        }
+        
+        birimFiyatSpan.innerText = birimFiyat.toFixed(2);
+        
+        const adet = parseFloat(adetInput) || 0;
+        const toplamTutar = birimFiyat * adet;
+        
+        toplamTutarSpan.innerText = toplamTutar.toFixed(2);
+    }
+</script>
+{% endblock %}

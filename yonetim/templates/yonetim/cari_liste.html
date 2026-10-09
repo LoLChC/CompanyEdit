@@ -1,6 +1,6 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Cari Hesaplar - Şirket Yönetim Paneli{% endblock %}
+{% block title %}Cari Hesaplar - EfeZade Group - Şirket Yönetimi{% endblock %}
 {% block page_title %}Cari Hesap Yönetimi{% endblock %}
 
 {% block header_actions %}
@@ -38,12 +38,13 @@
                     <th>Vergi Dairesi / No</th>
                     <th class="text-right">Güncel Bakiye</th>
                     <th>Durum</th>
+                    <th>İşlemler</th>
                 </tr>
             </thead>
             <tbody>
                 {% for cari in cariler %}
                 <tr>
-                    <td><strong>{{ cari.unvan }}</strong></td>
+                    <td><strong><a href="{% url 'yonetim:cari_detay' cari.id %}" style="text-decoration: none; color: var(--primary-color);">{{ cari.unvan }}</a></strong></td>
                     <td>
                         <span class="badge {% if cari.tur == 'musteri' %}badge-info{% elif cari.tur == 'tedarikci' %}badge-warning{% else %}badge-secondary{% endif %}">
                             {{ cari.get_tur_display }}
@@ -66,10 +67,16 @@
                             {{ cari.bakiye_durumu }}
                         </span>
                     </td>
+                    <td>
+                        <form action="{% url 'yonetim:cari_sil' cari.id %}" method="post" style="display:inline;" onsubmit="return confirm('Bu cariyi ve İLİŞKİLİ TÜM ALACAK, ÖDEME VE FİŞ kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz!');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px;">Sil</button>
+                        </form>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="empty-state">Henüz kayıtlı bir cari hesap bulunmuyor.</td>
+                    <td colspan="8" class="empty-state">Henüz kayıtlı bir cari hesap bulunmuyor.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,0 +1,147 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Ürün Alış / Satış | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Ürün Alış / Satış{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Hızlı İşlem Formu</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:urun_islemleri' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="islem_turu">İşlem Türü</label>
+                <select id="islem_turu" name="islem_turu" required>
+                    <option value="satis" selected>Satış Yap (Satış Fişi Oluşturur)</option>
+                    <option value="alis">Alış Yap (Alış Fişi Oluşturur)</option>
+                </select>
+                <span class="field-hint">Ürün adı: {{ tek_urun.urun_adi }} (Alış: {{ tek_urun.alis_fiyati }} TL, Satış: {{ tek_urun.satis_fiyati }} TL)</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="cari_hesap">Cari Hesap</label>
+                <select id="cari_hesap" name="cari_hesap" required>
+                    <option value="">— Cari Seçiniz —</option>
+                    {% for cari in cariler %}
+                    <option value="{{ cari.id }}">{{ cari.unvan }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="adet">Adet</label>
+                <input type="number" id="adet" name="adet" step="0.01" min="0" value="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="tutar">Toplam Tutar (TL)</label>
+                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
+                <span class="field-hint">Otomatik hesaplanır ancak dilerseniz değiştirebilirsiniz.</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="islem_tarihi">İşlem Tarihi</label>
+                <input type="date" id="islem_tarihi" name="islem_tarihi" value="{{ bugun|date:'Y-m-d' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="butce">İlgili Bütçe (isteğe bağlı)</label>
+                <select id="butce" name="butce">
+                    <option value="">— Tüm bütçe hesabına dahil —</option>
+                    {% for butce in butceler %}
+                    <option value="{{ butce.id }}">#{{ butce.id }} — {{ butce.aciklama|default:"Bütçe" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+    </form>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2>Geçmiş Ürün İşlemleri (Son 50)</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>İşlem Türü</th>
+                    <th>İlgili Kişi / Firma</th>
+                    <th>Tutar</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for islem in gecmis %}
+                <tr>
+                    <td>{{ islem.tarih|date:"d.m.Y" }}</td>
+                    <td><span class="badge badge-{{ islem.renk }}">{{ islem.tur }}</span></td>
+                    <td>{{ islem.kisi }}</td>
+                    <td>{{ islem.tutar }} TL</td>
+                    <td>{{ islem.durum }}</td>
+                    <td>
+                        <form action="{% url 'yonetim:fis_durum_degistir' islem.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary" style="padding:2px 5px; font-size:12px;">Durum</button>
+                        </form>
+                        <a href="{% url 'yonetim:fis_duzenle' islem.id %}" class="btn btn-sm btn-outline-primary" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Düzenle</a>
+                        <form action="{% url 'yonetim:fis_sil' islem.id %}" method="post" style="display:inline;" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px; margin-left: 5px;">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Henüz işlem bulunmuyor.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const islemTuru = document.getElementById('islem_turu');
+    const adetInput = document.getElementById('adet');
+    const tutarInput = document.getElementById('tutar');
+    
+    const satisFiyati = parseFloat("{{ tek_urun.satis_fiyati|stringformat:'f'|default:'0' }}") || 0;
+    const alisFiyati = parseFloat("{{ tek_urun.alis_fiyati|stringformat:'f'|default:'0' }}") || 0;
+
+    const cariHesap = document.getElementById('cari_hesap');
+
+    function calculateTutar() {
+        const adet = parseFloat(adetInput.value) || 0;
+        let fiyat = islemTuru.value === 'satis' ? satisFiyati : alisFiyati;
+        const toplam = fiyat * adet;
+        tutarInput.value = toplam.toFixed(2);
+        
+        if (islemTuru.value === 'alis') {
+            for (let i = 0; i < cariHesap.options.length; i++) {
+                if (cariHesap.options[i].text.includes('Elmaslar Pide')) {
+                    cariHesap.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    islemTuru.addEventListener('change', calculateTutar);
+    adetInput.addEventListener('input', calculateTutar);
+    
+    // Initial calculation
+    calculateTutar();
+});
+</script>
+{% endblock %}

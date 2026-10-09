@@ -1,0 +1,42 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Yeni Ürün | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Yeni Ürün Ekle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Ürün Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:urun_ekle' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="urun_adi">Ürün Adı</label>
+                <input type="text" id="urun_adi" name="urun_adi" maxlength="200" required placeholder="Örn: A4 Fotokopi Kağıdı">
+            </div>
+            <div class="form-group">
+                <label for="birim">Birim</label>
+                <input type="text" id="birim" name="birim" maxlength="50" required value="Adet" placeholder="Adet, Kg, Koli vb.">
+            </div>
+            <div class="form-group">
+                <label for="alis_fiyati">Alış Fiyatı (TL)</label>
+                <input type="number" id="alis_fiyati" name="alis_fiyati" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="satis_fiyati">Satış Fiyatı (TL)</label>
+                <input type="number" id="satis_fiyati" name="satis_fiyati" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="baslangic_stogu">Başlangıç Stoğu</label>
+                <input type="number" id="baslangic_stogu" name="baslangic_stogu" step="0.01" value="0.00" inputmode="decimal">
+                <span class="field-hint">Mevcut stoğunuz varsa buradan belirtebilirsiniz.</span>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:urun_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

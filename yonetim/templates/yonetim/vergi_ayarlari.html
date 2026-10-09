@@ -1,6 +1,6 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Vergilendirme | Şirket Yönetim Paneli{% endblock %}
+{% block title %}Vergilendirme | EfeZade Group - Şirket Yönetimi{% endblock %}
 {% block page_title %}Vergilendirme Ayarları{% endblock %}
 
 {% block header_actions %}
@@ -14,6 +14,7 @@
     </div>
     <form method="post" action="{% url 'yonetim:vergi_ayarlari' %}">
         {% csrf_token %}
+        <input type="hidden" name="form_type" value="ayarlar">
         <div class="form-grid">
             <div class="form-group">
                 <label for="kdv_orani">KDV Oranı (%)</label>
@@ -45,8 +46,32 @@
             <a href="{% url 'yonetim:butce_liste' %}" class="btn btn-secondary">İptal</a>
         </div>
     </form>
+</div><div class="card form-card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>Tek Ürün / Hizmet Ayarları</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:vergi_ayarlari' %}">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="tek_urun">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="urun_adi">Ürün / Hizmet Adı</label>
+                <input type="text" id="urun_adi" name="urun_adi" maxlength="200" value="{{ tek_urun.urun_adi }}" required>
+            </div>
+            <div class="form-group">
+                <label for="alis_fiyati">Net Alış Fiyatı (TL)</label>
+                <input type="number" id="alis_fiyati" name="alis_fiyati" step="0.01" min="0" value="{{ tek_urun.alis_fiyati }}" required inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="satis_fiyati">Net Satış Fiyatı (TL)</label>
+                <input type="number" id="satis_fiyati" name="satis_fiyati" step="0.01" min="0" value="{{ tek_urun.satis_fiyati }}" required inputmode="decimal">
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Ürün Ayarlarını Kaydet</button>
+        </div>
+    </form>
 </div>
-
 <div class="card" style="margin-top: 1.5rem;">
     <div class="card-header">
         <h2>Hesaplama Mantığı</h2>

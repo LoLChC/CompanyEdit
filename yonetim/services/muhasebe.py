@@ -51,6 +51,23 @@ def cari_guncelle(cari):
         else:
             bakiye += _q(belge.tutar)
 
+    from yonetim.models import Fis, Alacak, Odeme
+
+    for fis in Fis.objects.filter(cari_hesap=cari):
+        if fis.odeme_durumu == Fis.DURUM_BEKLIYOR:
+            if fis.fis_turu == Fis.FIS_ALIS:
+                bakiye += _q(fis.tutar)
+            else:
+                bakiye -= _q(fis.tutar)
+
+    for alacak in Alacak.objects.filter(cari_hesap=cari):
+        if alacak.durum == Alacak.DURUM_BEKLIYOR:
+            bakiye -= _q(alacak.tutar)
+
+    for odeme in Odeme.objects.filter(cari_hesap=cari):
+        if odeme.durum == Odeme.DURUM_BEKLIYOR:
+            bakiye += _q(odeme.tutar)
+
     cari.guncel_bakiye = _q(bakiye)
     cari.save(update_fields=['guncel_bakiye'])
     return cari.guncel_bakiye

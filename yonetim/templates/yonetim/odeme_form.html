@@ -1,7 +1,7 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Yeni Ödeme | Şirket Yönetim Paneli{% endblock %}
-{% block page_title %}Yeni Ödeme Ekle{% endblock %}
+{% block title %}Yeni Ödeme | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Yeni Ödeme Ekle (Ürün / Mal Alışı){% endblock %}
 
 {% block content %}
 <div class="card form-card">
@@ -12,7 +12,7 @@
         {% csrf_token %}
         <div class="form-grid">
             <div class="form-group">
-                <label for="tutar">Tutar (TL)</label>
+                <label for="tutar">Toplam Tutar (TL)</label>
                 <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
             </div>
             <div class="form-group">
@@ -26,8 +26,16 @@
                 <span class="field-hint">Paranın ne zaman ödeneceği</span>
             </div>
             <div class="form-group">
+                <label for="odeme_turu">Ödeme Türü (Hızlı Seçim)</label>
+                <select id="odeme_turu" name="odeme_turu">
+                    <option value="">— Diğer / Standart —</option>
+                    <option value="urun_alisi">Ürün Alışı</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="kime">Kime</label>
-                <input type="text" id="kime" name="kime" maxlength="200" required placeholder="Ödeme yapılacak kişi / firma">
+                <input type="text" id="kime" name="kime" maxlength="200" required placeholder="Ödeme yapılacak kişi / firma (Kurum için parantez kullanın)">
+                <span class="field-hint">Parantez içinde unvan girilirse otomatik Cari Hesap oluşturulur/bağlanır. Örn: Mehmet (Kaya İnşaat A.Ş.)</span>
             </div>
             <div class="form-group">
                 <label for="durum">Durum</label>
@@ -58,4 +66,20 @@
         </div>
     </form>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const odemeTuru = document.getElementById('odeme_turu');
+    const kimeInput = document.getElementById('kime');
+    const aciklamaInput = document.getElementById('aciklama');
+
+    odemeTuru.addEventListener('change', function() {
+        if (this.value === 'urun_alisi') {
+            kimeInput.value = 'Elmaslar Pide';
+            if (!aciklamaInput.value) {
+                aciklamaInput.value = 'Ürün Alışı';
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

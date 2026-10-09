@@ -1,0 +1,90 @@
+{% extends 'yonetim/base.html' %}
+
+{% block title %}Fiş Düzenle | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Fiş Düzenle{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+    <div class="card-header">
+        <h2>Fiş Bilgileri</h2>
+    </div>
+    <form method="post" action="{% url 'yonetim:fis_duzenle' fis.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="fis_turu">Fiş Türü</label>
+                <select id="fis_turu" name="fis_turu" required>
+                    {% for key, val in fis_turu_secenekleri %}
+                    <option value="{{ key }}" {% if fis.fis_turu == key %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fis_no">Fiş Numarası</label>
+                <input type="text" id="fis_no" name="fis_no" maxlength="60" value="{{ fis.fis_no }}">
+            </div>
+            <div class="form-group">
+                <label for="tarih">Tarih</label>
+                <input type="date" id="tarih" name="tarih" value="{{ fis.tarih|date:'Y-m-d' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="cari_hesap">Kurum Cari Hesabı (Opsiyonel)</label>
+                <select id="cari_hesap" name="cari_hesap">
+                    <option value="">— Cari Seçiniz —</option>
+                    {% for cari in cariler %}
+                    <option value="{{ cari.id }}" {% if fis.cari_hesap_id == cari.id %}selected{% endif %}>{{ cari.unvan }}</option>
+                    {% endfor %}
+                </select>
+                <span class="field-hint">Sadece kurum ise seçiniz</span>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Alınan Mal/Hizmet Açıklaması</label>
+                <textarea id="aciklama" name="aciklama" required>{{ fis.aciklama }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="tutar">Tutar (KDV Dahil Toplam TL)</label>
+                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required value="{{ fis.tutar|stringformat:'f' }}" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="kdv_orani">KDV Oranı (%)</label>
+                <select id="kdv_orani" name="kdv_orani" required>
+                    <option value="20" {% if fis.kdv_orani == 20 %}selected{% endif %}>20%</option>
+                    <option value="10" {% if fis.kdv_orani == 10 %}selected{% endif %}>10%</option>
+                    <option value="1" {% if fis.kdv_orani == 1 %}selected{% endif %}>1%</option>
+                    <option value="0" {% if fis.kdv_orani == 0 %}selected{% endif %}>0%</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="odeme_durumu">Ödeme Durumu</label>
+                <select id="odeme_durumu" name="odeme_durumu" required>
+                    {% for key, val in durum_secenekleri %}
+                    <option value="{{ key }}" {% if fis.odeme_durumu == key %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fis_gorseli">Fiş Görseli (Opsiyonel)</label>
+                {% if fis.fis_gorseli %}
+                <div style="margin-bottom: 5px;">
+                    <a href="{{ fis.fis_gorseli.url }}" target="_blank">Mevcut Görsel</a>
+                </div>
+                {% endif %}
+                <input type="file" id="fis_gorseli" name="fis_gorseli" accept="image/*,application/pdf">
+            </div>
+            <div class="form-group" style="display:none;">
+                <label for="butce">İlgili Bütçe</label>
+                <select id="butce" name="butce">
+                    <option value="">— Seçilmedi —</option>
+                    {% for butce in butceler %}
+                    <option value="{{ butce.id }}" {% if fis.butce_id == butce.id %}selected{% endif %}>#{{ butce.id }} — Güncel: {{ butce.guncel_butce }} TL</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="{% url 'yonetim:fis_liste' %}" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

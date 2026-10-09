@@ -12,6 +12,7 @@ MENU_MAP = {
     'vergi_ayarlari': 'vergilendirme',
     'fis_liste': 'fisler',
     'fis_ekle': 'fisler',
+    'urun_islemleri': 'urun_islemleri',
 }
 
 

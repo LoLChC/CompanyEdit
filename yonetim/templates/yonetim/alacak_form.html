@@ -1,7 +1,7 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Yeni Alacak | Şirket Yönetim Paneli{% endblock %}
-{% block page_title %}Yeni Alacak Ekle{% endblock %}
+{% block title %}Yeni Alacak | EfeZade Group - Şirket Yönetimi{% endblock %}
+{% block page_title %}Yeni Alacak Ekle (Ürün / Hizmet Satışı){% endblock %}
 
 {% block content %}
 <div class="card form-card">
@@ -11,8 +11,9 @@
     <form method="post" action="{% url 'yonetim:alacak_ekle' %}">
         {% csrf_token %}
         <div class="form-grid">
+
             <div class="form-group">
-                <label for="tutar">Tutar (TL)</label>
+                <label for="tutar">Toplam Tutar (TL)</label>
                 <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
             </div>
             <div class="form-group">
@@ -27,7 +28,8 @@
             </div>
             <div class="form-group">
                 <label for="kimden">Kimden</label>
-                <input type="text" id="kimden" name="kimden" maxlength="200" required placeholder="Alacağın kimden olduğu">
+                <input type="text" id="kimden" name="kimden" maxlength="200" required placeholder="Alacağın kimden olduğu (Kurum için parantez kullanın)">
+                <span class="field-hint">Parantez içinde unvan girilirse otomatik Cari Hesap oluşturulur/bağlanır. Örn: Ahmet (Ahmet Tic. Ltd.)</span>
             </div>
             <div class="form-group">
                 <label for="durum">Durum</label>
@@ -58,4 +60,5 @@
         </div>
     </form>
 </div>
+
 {% endblock %}

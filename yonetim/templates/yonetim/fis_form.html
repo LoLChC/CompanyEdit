@@ -1,6 +1,6 @@
 {% extends 'yonetim/base.html' %}
 
-{% block title %}Yeni Fiş | Şirket Yönetim Paneli{% endblock %}
+{% block title %}Yeni Fiş | EfeZade Group - Şirket Yönetimi{% endblock %}
 {% block page_title %}Yeni Fiş Ekle{% endblock %}
 
 {% block content %}
@@ -12,27 +12,62 @@
         {% csrf_token %}
         <div class="form-grid">
             <div class="form-group">
-                <label for="tutar">Tutar (TL)</label>
-                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
+                <label for="fis_turu">Fiş Türü</label>
+                <select id="fis_turu" name="fis_turu" required>
+                    {% for key, val in fis_turu_secenekleri %}
+                    <option value="{{ key }}">{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fis_no">Fiş Numarası</label>
+                <input type="text" id="fis_no" name="fis_no" maxlength="60" placeholder="Opsiyonel">
             </div>
             <div class="form-group">
                 <label for="tarih">Tarih</label>
-                <input type="date" id="tarih" name="tarih" required>
+                <input type="date" id="tarih" name="tarih" value="{{ bugun|date:'Y-m-d' }}" required>
             </div>
             <div class="form-group">
-                <label for="kategori">Kategori</label>
-                <input type="text" id="kategori" name="kategori" maxlength="100" required placeholder="Market, Yakıt, Ofis vb.">
+                <label for="cari_hesap">Kurum Cari Hesabı (Opsiyonel)</label>
+                <select id="cari_hesap" name="cari_hesap">
+                    <option value="">— Cari Seçiniz —</option>
+                    {% for cari in cariler %}
+                    <option value="{{ cari.id }}">{{ cari.unvan }}</option>
+                    {% endfor %}
+                </select>
+                <span class="field-hint">Sadece kurum ise seçiniz</span>
             </div>
             <div class="form-group">
-                <label for="aciklama">Açıklama</label>
-                <textarea id="aciklama" name="aciklama" placeholder="İsteğe bağlı açıklama"></textarea>
+                <label for="aciklama">Alınan Mal/Hizmet Açıklaması</label>
+                <textarea id="aciklama" name="aciklama" required placeholder="Neler alındı?"></textarea>
             </div>
             <div class="form-group">
-                <label for="fis_gorseli">Fiş Görseli</label>
-                <input type="file" id="fis_gorseli" name="fis_gorseli" accept="image/*">
+                <label for="tutar">Tutar (KDV Dahil Toplam TL)</label>
+                <input type="number" id="tutar" name="tutar" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
             </div>
             <div class="form-group">
-                <label for="butce">İlgili Bütçe (isteğe bağlı)</label>
+                <label for="kdv_orani">KDV Oranı (%)</label>
+                <select id="kdv_orani" name="kdv_orani" required>
+                    <option value="20">20%</option>
+                    <option value="10">10%</option>
+                    <option value="1">1%</option>
+                    <option value="0">0%</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="odeme_durumu">Ödeme Durumu</label>
+                <select id="odeme_durumu" name="odeme_durumu" required>
+                    {% for key, val in durum_secenekleri %}
+                    <option value="{{ key }}">{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fis_gorseli">Fiş Görseli (Opsiyonel)</label>
+                <input type="file" id="fis_gorseli" name="fis_gorseli" accept="image/*,application/pdf">
+            </div>
+            <div class="form-group" style="display:none;">
+                <label for="butce">İlgili Bütçe</label>
                 <select id="butce" name="butce">
                     <option value="">— Seçilmedi —</option>
                     {% for butce in butceler %}

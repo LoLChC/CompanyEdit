@@ -4,29 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Şirket Yönetim Paneli{% endblock %}</title>
+    <title>{% block title %}EfeZade Group - Şirket Yönetimi{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'yonetim/css/style.css' %}">
 </head>
 <body>
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-brand">
-                Efezade<span>Group</span>
+                EfeZade<span>Group</span>
             </div>
             <nav class="sidebar-nav">
                 <a href="{% url 'yonetim:finans_portfoy' %}" class="{% if active_menu == 'portfoy' %}active{% endif %}">Finansal Portföy</a>
                 <a href="{% url 'yonetim:cari_liste' %}" class="{% if active_menu == 'cariler' %}active{% endif %}">Cari Hesaplar</a>
                 <a href="{% url 'yonetim:kasa_liste' %}" class="{% if active_menu == 'kasalar' %}active{% endif %}">Kasa &amp; Banka</a>
-                <a href="{% url 'yonetim:gider_liste' %}" class="{% if active_menu == 'giderler' %}active{% endif %}">İşletme Giderleri</a>
-                <a href="{% url 'yonetim:fatura_liste' %}" class="{% if active_menu == 'faturalar' %}active{% endif %}">Faturalar</a>
-                <a href="{% url 'yonetim:ceksenet_liste' %}" class="{% if active_menu == 'ceksenet' %}active{% endif %}">Çek &amp; Senet</a>
-                <a href="{% url 'yonetim:odeme_liste' %}" class="{% if active_menu == 'odemeler' %}active{% endif %}">Ödemeler</a>
-                <a href="{% url 'yonetim:alacak_liste' %}" class="{% if active_menu == 'alacaklar' %}active{% endif %}">Alacaklar</a>
-                <a href="{% url 'yonetim:haftalik_plan_liste' %}" class="{% if active_menu == 'planlar' %}active{% endif %}">Haftalık Takvim</a>
-                <a href="{% url 'yonetim:stok_liste' %}" class="{% if active_menu == 'stoklar' %}active{% endif %}">Stoklar</a>
-                <a href="{% url 'yonetim:butce_liste' %}" class="{% if active_menu == 'butce' %}active{% endif %}">Bütçe</a>
-                <a href="{% url 'yonetim:vergi_ayarlari' %}" class="{% if active_menu == 'vergilendirme' %}active{% endif %}">Vergilendirme</a>
                 <a href="{% url 'yonetim:fis_liste' %}" class="{% if active_menu == 'fisler' %}active{% endif %}">Fişler</a>
+                <a href="{% url 'yonetim:fatura_liste' %}" class="{% if active_menu == 'faturalar' %}active{% endif %}">Faturalar</a>
+                <a href="{% url 'yonetim:vergi_ayarlari' %}" class="{% if active_menu == 'vergilendirme' %}active{% endif %}">Vergilendirme &amp; KDV</a>
+                <a href="{% url 'yonetim:alacak_liste' %}" class="{% if active_menu == 'alacaklar' %}active{% endif %}">Alacaklar</a>
+                <a href="{% url 'yonetim:odeme_liste' %}" class="{% if active_menu == 'odemeler' %}active{% endif %}">Ödemeler</a>
+                <a href="{% url 'yonetim:haftalik_plan_liste' %}" class="{% if active_menu == 'planlar' %}active{% endif %}">Haftalık Plan</a>
+                <a href="{% url 'yonetim:urun_islemleri' %}" class="{% if active_menu == 'urun_islemleri' %}active{% endif %}">Ürün Alış / Satış</a>
             </nav>
         </aside>
 
