@@ -104,12 +104,6 @@ def odeme_ekle(request):
                 if not kime:
                     raise ValueError('Kime alanı zorunludur.')
                 
-                cari = None
-                if is_kurum(kime):
-                    cari = CariHesap.objects.filter(unvan=kime).first()
-                    if not cari:
-                        cari = CariHesap.objects.create(unvan=kime, tur=CariHesap.TUR_TEDARIKCI)
-                
                 durum = request.POST.get('durum') or Odeme.DURUM_BEKLIYOR
                 aciklama = request.POST.get('aciklama', '')
                 butce_id = request.POST.get('butce') or None
@@ -120,7 +114,6 @@ def odeme_ekle(request):
                     islem_tarihi=islem_tarihi,
                     vade_tarihi=vade_tarihi,
                     kime=kime,
-                    cari_hesap=cari,
                     durum=durum,
                     aciklama=aciklama,
                     butce=butce,
@@ -143,7 +136,7 @@ def odeme_ekle(request):
 # ---------- Alacaklar ----------
 
 def alacak_liste(request):
-    alacaklar = Alacak.objects.select_related('butce', 'cari_hesap').all()
+    alacaklar = Alacak.objects.select_related('butce').all()
     return render(request, 'yonetim/alacak_liste.html', {'alacaklar': alacaklar})
 
 
@@ -161,12 +154,6 @@ def alacak_ekle(request):
                 if not kimden:
                     raise ValueError('Kimden alanı zorunludur.')
                 
-                cari = None
-                if is_kurum(kimden):
-                    cari = CariHesap.objects.filter(unvan=kimden).first()
-                    if not cari:
-                        cari = CariHesap.objects.create(unvan=kimden, tur=CariHesap.TUR_MUSTERI)
-
                 durum = request.POST.get('durum') or Alacak.DURUM_BEKLIYOR
                 aciklama = request.POST.get('aciklama', '')
                 butce_id = request.POST.get('butce') or None
@@ -177,7 +164,6 @@ def alacak_ekle(request):
                     islem_tarihi=islem_tarihi,
                     tahsil_tarihi=tahsil_tarihi,
                     kimden=kimden,
-                    cari_hesap=cari,
                     durum=durum,
                     aciklama=aciklama,
                     butce=butce,
@@ -417,11 +403,7 @@ def fis_ekle(request):
                 )
                 
                 if cari:
-                    if fis_turu == Fis.FIS_ALIS:
-                        cari.guncel_bakiye += tutar
-                    else:
-                        cari.guncel_bakiye -= tutar
-                    cari.save(update_fields=['guncel_bakiye'])
+                    cari_guncelle(cari)
 
                 if butce:
                     butce_guncelle(butce)
@@ -487,67 +469,42 @@ def cari_ekle(request):
 
 def cari_detay(request, pk):
     cari = get_object_or_404(CariHesap, pk=pk)
-    alacaklar = list(cari.alacaklar.all())
-    odemeler = list(cari.odemeler.all()) # wait, Odeme model has 'kime' string, not a ForeignKey to CariHesap?
-    faturalar = list(cari.faturalar.all())
-    fisler = list(cari.fisler.all())
     
-    # We need to build a combined timeline. 
-    # BUT wait, Odeme and Alacak in models.py don't have a ForeignKey to CariHesap! 
-    # Let me check Odeme and Alacak models. 
-    # Ah, Odeme has kime (CharField), Alacak has kimden (CharField).
-    # Did the user change it? No, they didn't. 
-    # Wait, the prompt says "Altında o cariye ait geçmiş tüm Alacaklar, Ödemeler, Faturalar ve Fişler birleşik bir kronolojik tablo (Cari Ekstre) olarak listelensin."
-    # If Odeme/Alacak don't link to CariHesap by ForeignKey, I must filter by `kimden=cari.unvan` or similar. Let's do that.
-    alacaklar = list(Alacak.objects.filter(kimden=cari.unvan))
-    odemeler = list(Odeme.objects.filter(kime=cari.unvan))
+    # 1. Ürün / Mal Hareketleri (Fişler ve Faturalar)
+    urun_hareketleri = []
     
-    hareketler = []
-    
-    for a in alacaklar:
-        hareketler.append({
-            'tarih': a.islem_tarihi,
-            'tur': 'Alacak',
-            'aciklama': a.aciklama or 'Alacak Kaydı',
-            'tutar': a.tutar,
-            'borc_alacak': 'alacak', # Bize borçlular, biz alacaklıyız
-            'renk': 'success',
-        })
-        
-    for o in odemeler:
-        hareketler.append({
-            'tarih': o.islem_tarihi,
-            'tur': 'Ödeme',
-            'aciklama': o.aciklama or 'Ödeme Kaydı',
-            'tutar': o.tutar,
-            'borc_alacak': 'borc', # Biz ödüyoruz, biz borçluyuz
-            'renk': 'danger',
-        })
-        
-    for f in faturalar:
-        hareketler.append({
+    for f in cari.faturalar.all():
+        urun_hareketleri.append({
             'tarih': f.tarih,
             'tur': 'Fatura',
-            'aciklama': f.fatura_no + ' (' + f.get_tur_display() + ')',
+            'aciklama': f"{f.fatura_no} ({f.get_tur_display()})",
             'tutar': f.toplam_tutar,
-            'borc_alacak': 'borc' if f.tur == 'gelen' else 'alacak',
-            'renk': 'danger' if f.tur == 'gelen' else 'success',
+            'borc_alacak': 'borc' if f.tur == 'giden' else 'alacak',
+            'renk': 'primary',
         })
         
-    for fis in fisler:
-        hareketler.append({
+    for fis in cari.fisler.all():
+        urun_hareketleri.append({
             'tarih': fis.tarih,
             'tur': 'Fiş',
-            'aciklama': fis.aciklama or 'Mal/Hizmet Alımı',
+            'aciklama': fis.aciklama or 'Mal/Hizmet Alımı/Satışı',
             'tutar': fis.tutar,
-            'borc_alacak': 'borc',
-            'renk': 'danger',
+            'borc_alacak': 'borc' if fis.fis_turu == 'satis' else 'alacak',
+            'renk': 'primary',
         })
         
-    # Kasa hareketlerini de ekleyelim
-    kasa_hareketleri = list(cari.kasa_hareketleri.all())
-    for k in kasa_hareketleri:
-        hareketler.append({
+    urun_hareketleri.sort(key=lambda x: x['tarih'], reverse=True)
+    
+    # 2. Kasa / Para Hareketleri
+    para_hareketleri = []
+    
+    for k in cari.kasa_hareketleri.all():
+        if k.isletme_gideri: continue # Skip if it's purely a business expense, though normally they aren't linked to cari
+        
+        para_hareketleri.append({
+            'id': k.id,
+            'is_kasa_hareketi': True,
+            'kasa_id': k.kasa_id,
             'tarih': k.tarih,
             'tur': 'Kasa Hareketi',
             'aciklama': k.aciklama or k.get_islem_turu_display(),
@@ -556,13 +513,139 @@ def cari_detay(request, pk):
             'renk': 'success' if k.islem_turu == 'giris' else 'danger',
         })
         
-    # Sort by date
-    hareketler.sort(key=lambda x: x['tarih'], reverse=True)
+    for belge in cari.cek_senetler.all():
+        if belge.durum != CekSenet.DURUM_KARSILIKSIZ:
+            para_hareketleri.append({
+                'tarih': belge.keside_tarihi or belge.vade_tarihi or timezone.now().date(),
+                'tur': f"{belge.get_tur_display()} ({belge.portfoy_no})",
+                'aciklama': belge.aciklama or 'Çek/Senet İşlemi',
+                'tutar': belge.tutar,
+                'borc_alacak': 'alacak' if belge.yon == 'alinan' else 'borc',
+                'renk': 'success' if belge.yon == 'alinan' else 'danger',
+            })
+
+    para_hareketleri.sort(key=lambda x: x['tarih'], reverse=True)
     
     return render(request, 'yonetim/cari_detay.html', {
         'cari': cari,
-        'hareketler': hareketler
+        'urun_hareketleri': urun_hareketleri,
+        'para_hareketleri': para_hareketleri,
+        'kasalar': Kasa.objects.all(),
+        'bugun': timezone.now().date(),
     })
+
+
+def cari_tahsilat_ekle(request, pk):
+    cari = get_object_or_404(CariHesap, pk=pk)
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                kasa_id = request.POST.get('kasa')
+                kasa = Kasa.objects.filter(pk=kasa_id).first()
+                if not kasa:
+                    raise ValueError('Kasa seçimi zorunludur.')
+                
+                tutar = _parse_decimal(request.POST.get('tutar'), 'Tutar')
+                tarih = _parse_date(request.POST.get('tarih'), 'Tarih')
+                aciklama = request.POST.get('aciklama', 'Tahsilat')
+                
+                kasa_hareketi_olustur(
+                    kasa=kasa,
+                    islem_turu=KasaHareketi.ISLEM_GIRIS,
+                    tutar=tutar,
+                    tarih=tarih,
+                    aciklama=aciklama,
+                    cari_hesap=cari,
+                )
+            messages.success(request, 'Tahsilat başarıyla eklendi.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            
+    return redirect('yonetim:cari_detay', pk=cari.pk)
+
+
+def cari_odeme_ekle(request, pk):
+    cari = get_object_or_404(CariHesap, pk=pk)
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                kasa_id = request.POST.get('kasa')
+                kasa = Kasa.objects.filter(pk=kasa_id).first()
+                if not kasa:
+                    raise ValueError('Kasa seçimi zorunludur.')
+                
+                tutar = _parse_decimal(request.POST.get('tutar'), 'Tutar')
+                tarih = _parse_date(request.POST.get('tarih'), 'Tarih')
+                aciklama = request.POST.get('aciklama', 'Ödeme')
+                
+                kasa_hareketi_olustur(
+                    kasa=kasa,
+                    islem_turu=KasaHareketi.ISLEM_CIKIS,
+                    tutar=tutar,
+                    tarih=tarih,
+                    aciklama=aciklama,
+                    cari_hesap=cari,
+                )
+            messages.success(request, 'Ödeme başarıyla eklendi.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            
+    return redirect('yonetim:cari_detay', pk=cari.pk)
+
+
+def cari_kasa_hareketi_duzenle(request, pk):
+    hareket = get_object_or_404(KasaHareketi, pk=pk)
+    cari = hareket.cari_hesap
+    if not cari:
+        messages.error(request, 'Bu hareket bir cariye bağlı değil.')
+        return redirect('yonetim:kasa_liste')
+        
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                kasa_id = request.POST.get('kasa')
+                kasa = Kasa.objects.filter(pk=kasa_id).first()
+                if not kasa:
+                    raise ValueError('Kasa seçimi zorunludur.')
+                
+                tutar = _parse_decimal(request.POST.get('tutar'), 'Tutar')
+                tarih = _parse_date(request.POST.get('tarih'), 'Tarih')
+                aciklama = request.POST.get('aciklama', '')
+                
+                eski_kasa = hareket.kasa
+                hareket.kasa = kasa
+                hareket.tutar = tutar
+                hareket.tarih = tarih
+                hareket.aciklama = aciklama
+                hareket.save()
+                
+                kasa_guncelle(eski_kasa)
+                if eski_kasa.id != kasa.id:
+                    kasa_guncelle(kasa)
+                cari_guncelle(cari)
+            messages.success(request, 'Kasa hareketi başarıyla güncellendi.')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            
+    return redirect('yonetim:cari_detay', pk=cari.pk)
+
+
+def cari_kasa_hareketi_sil(request, pk):
+    hareket = get_object_or_404(KasaHareketi, pk=pk)
+    cari = hareket.cari_hesap
+    if not cari:
+        messages.error(request, 'Bu hareket bir cariye bağlı değil.')
+        return redirect('yonetim:kasa_liste')
+        
+    if request.method == 'POST':
+        with transaction.atomic():
+            kasa = hareket.kasa
+            hareket.delete()
+            kasa_guncelle(kasa)
+            cari_guncelle(cari)
+        messages.success(request, 'Kasa hareketi başarıyla silindi.')
+        
+    return redirect('yonetim:cari_detay', pk=cari.pk)
 
 
 # ---------- Kasa ----------
@@ -651,10 +734,15 @@ def kasa_hareket_ekle(request):
 
 def gider_liste(request):
     giderler = IsletmeGideri.objects.select_related('kategori', 'kasa').all()
-    toplam_gider = sum((g.tutar for g in giderler), Decimal('0'))
+    bugun = timezone.now().date()
+    bu_ayki_giderler = [g for g in giderler if g.odeme_tarihi and g.odeme_tarihi.year == bugun.year and g.odeme_tarihi.month == bugun.month]
+    toplam_gider = sum((g.tutar for g in bu_ayki_giderler), Decimal('0'))
+    kasalar = Kasa.objects.all()
     return render(request, 'yonetim/gider_liste.html', {
         'giderler': giderler,
         'toplam_gider': toplam_gider,
+        'kasalar': kasalar,
+        'bugun': bugun,
     })
 
 
@@ -1031,8 +1119,6 @@ def alacak_durum_degistir(request, pk):
     else:
         alacak.durum = Alacak.DURUM_BEKLIYOR
     alacak.save(update_fields=['durum'])
-    if alacak.cari_hesap:
-        cari_guncelle(alacak.cari_hesap)
     return redirect(request.META.get('HTTP_REFERER', 'yonetim:alacak_liste'))
 
 def odeme_durum_degistir(request, pk):
@@ -1042,8 +1128,6 @@ def odeme_durum_degistir(request, pk):
     else:
         odeme.durum = Odeme.DURUM_BEKLIYOR
     odeme.save(update_fields=['durum'])
-    if odeme.cari_hesap:
-        cari_guncelle(odeme.cari_hesap)
     return redirect(request.META.get('HTTP_REFERER', 'yonetim:odeme_liste'))
 
 
@@ -1062,21 +1146,12 @@ def alacak_duzenle(request, pk):
                     raise ValueError('Kimden alanı zorunludur.')
                 alacak.kimden = kimden
                 
-                cari = None
-                if is_kurum(kimden):
-                    cari = CariHesap.objects.filter(unvan=kimden).first()
-                    if not cari:
-                        cari = CariHesap.objects.create(unvan=kimden, tur=CariHesap.TUR_MUSTERI)
-                alacak.cari_hesap = cari
-                
                 alacak.durum = request.POST.get('durum') or Alacak.DURUM_BEKLIYOR
                 alacak.aciklama = request.POST.get('aciklama', '')
                 butce_id = request.POST.get('butce') or None
                 alacak.butce = Butce.objects.filter(pk=butce_id).first() if butce_id else None
                 alacak.save()
                 
-                if alacak.cari_hesap:
-                    cari_guncelle(alacak.cari_hesap)
                 if alacak.butce:
                     butce_guncelle(alacak.butce)
                     
@@ -1094,10 +1169,7 @@ def alacak_duzenle(request, pk):
 def alacak_sil(request, pk):
     alacak = get_object_or_404(Alacak, pk=pk)
     if request.method == 'POST':
-        cari = alacak.cari_hesap
         alacak.delete()
-        if cari:
-            cari_guncelle(cari)
         messages.success(request, 'Alacak başarıyla silindi.')
     return redirect('yonetim:alacak_liste')
 
@@ -1116,21 +1188,12 @@ def odeme_duzenle(request, pk):
                     raise ValueError('Kime alanı zorunludur.')
                 odeme.kime = kime
                 
-                cari = None
-                if is_kurum(kime):
-                    cari = CariHesap.objects.filter(unvan=kime).first()
-                    if not cari:
-                        cari = CariHesap.objects.create(unvan=kime, tur=CariHesap.TUR_TEDARIKCI)
-                odeme.cari_hesap = cari
-                
                 odeme.durum = request.POST.get('durum') or Odeme.DURUM_BEKLIYOR
                 odeme.aciklama = request.POST.get('aciklama', '')
                 butce_id = request.POST.get('butce') or None
                 odeme.butce = Butce.objects.filter(pk=butce_id).first() if butce_id else None
                 odeme.save()
                 
-                if odeme.cari_hesap:
-                    cari_guncelle(odeme.cari_hesap)
                 if odeme.butce:
                     butce_guncelle(odeme.butce)
                     
@@ -1148,10 +1211,7 @@ def odeme_duzenle(request, pk):
 def odeme_sil(request, pk):
     odeme = get_object_or_404(Odeme, pk=pk)
     if request.method == 'POST':
-        cari = odeme.cari_hesap
         odeme.delete()
-        if cari:
-            cari_guncelle(cari)
         messages.success(request, 'Ödeme başarıyla silindi.')
     return redirect('yonetim:odeme_liste')
 
@@ -1218,8 +1278,6 @@ def cari_sil(request, pk):
     cari = get_object_or_404(CariHesap, pk=pk)
     if request.method == 'POST':
         # Silinecek ilişkili veriler
-        cari.alacaklar.all().delete()
-        cari.odemeler.all().delete()
         cari.fisler.all().delete()
         cari.faturalar.all().delete()
         cari.kasa_hareketleri.all().delete()
@@ -1239,3 +1297,84 @@ def fis_durum_degistir(request, pk):
     if fis.cari_hesap:
         cari_guncelle(fis.cari_hesap)
     return redirect(request.META.get('HTTP_REFERER', 'yonetim:fis_liste'))
+
+from django.views.decorators.http import require_POST
+
+@require_POST
+def gider_sil(request, pk):
+    gider = get_object_or_404(IsletmeGideri, pk=pk)
+    try:
+        with transaction.atomic():
+            if hasattr(gider, 'kasa_hareketleri'):
+                gider.kasa_hareketleri.all().delete()
+            gider.delete()
+        messages.success(request, 'İşletme gideri ve kasa hareketi başarıyla silindi.')
+    except Exception as e:
+        messages.error(request, f'Silinirken hata oluştu: {e}')
+    return redirect('yonetim:gider_liste')
+
+def gider_duzenle(request, pk):
+    gider = get_object_or_404(IsletmeGideri, pk=pk)
+    kategoriler = GiderKategorisi.objects.all()
+    kasalar = Kasa.objects.all()
+    
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                kategori_id = request.POST.get('kategori') or None
+                yeni_kategori = (request.POST.get('yeni_kategori') or '').strip()
+                if yeni_kategori:
+                    kategori, _ = GiderKategorisi.objects.get_or_create(ad=yeni_kategori)
+                elif kategori_id:
+                    kategori = GiderKategorisi.objects.filter(pk=kategori_id).first()
+                    if not kategori:
+                        raise ValueError('Seçilen kategori bulunamadı.')
+                else:
+                    raise ValueError('Kategori seçimi veya yeni kategori adı zorunludur.')
+
+                tutar = _parse_decimal(request.POST.get('tutar'), 'Tutar')
+                kdv_orani = _parse_decimal_optional(request.POST.get('kdv_orani'), gider.kdv_orani)
+                odeme_tarihi = _parse_date(request.POST.get('odeme_tarihi'), 'Ödeme Tarihi')
+                aciklama = request.POST.get('aciklama', '')
+                kasa_id = request.POST.get('kasa') or None
+                kasa = Kasa.objects.filter(pk=kasa_id).first() if kasa_id else None
+
+                gider.kategori = kategori
+                gider.tutar = tutar
+                gider.kdv_orani = kdv_orani
+                gider.odeme_tarihi = odeme_tarihi
+                gider.kasa = kasa
+                gider.aciklama = aciklama
+                
+                if 'belge' in request.FILES:
+                    gider.belge = request.FILES['belge']
+                elif 'belge_sil' in request.POST:
+                    gider.belge.delete(save=False)
+                    gider.belge = None
+                
+                gider.save()
+                
+                if hasattr(gider, 'kasa_hareketleri'):
+                    gider.kasa_hareketleri.all().delete()
+                
+                if kasa:
+                    kasa_hareketi_olustur(
+                        kasa=kasa,
+                        islem_turu=KasaHareketi.ISLEM_CIKIS,
+                        tutar=tutar,
+                        tarih=odeme_tarihi,
+                        aciklama=f'İşletme gideri: {kategori.ad}',
+                        isletme_gideri=gider,
+                    )
+            messages.success(request, 'İşletme gideri başarıyla güncellendi.')
+            return redirect('yonetim:gider_liste')
+        except ValueError as exc:
+            messages.error(request, str(exc))
+
+    return render(request, 'yonetim/gider_form.html', {
+        'gider': gider,
+        'kategoriler': kategoriler,
+        'kasalar': kasalar,
+        'varsayilan_kdv': gider.kdv_orani,
+        'bugun': gider.odeme_tarihi.strftime('%Y-%m-%d') if gider.odeme_tarihi else '',
+    })

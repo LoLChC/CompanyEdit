@@ -25,48 +25,69 @@ def cari_guncelle(cari):
 
     bakiye = _q(cari.baslangic_bakiyesi)
 
-    # Gelen faturalarda (tedarikçi/alış): Biz borçlanırız (+bakiye: bize alacaklı)
-    # Giden faturalarda (müşteri/satış): Müşteri borçlanır (-bakiye: bize borçlu)
-    for fatura in Fatura.objects.filter(cari_hesap=cari):
-        kalan = _q(fatura.toplam_tutar) - _q(fatura.odenen_tutar)
-        if kalan < SIFIR:
-            kalan = SIFIR
-        if fatura.tur == Fatura.TUR_GELEN:
-            bakiye += kalan
-        else:
-            bakiye -= kalan
+    from yonetim.models import Fis
 
-    # Doğrudan kasa hareketleri (faturaya bağlı olmayanlar)
-    for hareket in KasaHareketi.objects.filter(cari_hesap=cari, fatura__isnull=True, isletme_gideri__isnull=True):
-        if hareket.islem_turu == KasaHareketi.ISLEM_GIRIS:
-            # Cari bize ödeme yaptı, alacağımız/bakiyemiz azalır
-            bakiye -= _q(hareket.tutar)
-        else:
-            # Biz cariye ödeme yaptık, borcumuz azalır
-            bakiye += _q(hareket.tutar)
+    is_tedarikci = (cari.tur == CariHesap.TUR_TEDARIKCI)
 
-    for belge in CekSenet.objects.filter(cari_hesap=cari).exclude(durum=CekSenet.DURUM_KARSILIKSIZ):
-        if belge.yon == CekSenet.YON_ALINAN:
-            bakiye -= _q(belge.tutar)
-        else:
-            bakiye += _q(belge.tutar)
-
-    from yonetim.models import Fis, Alacak, Odeme
-
+    # Ürün Satışlarında/Alışlarında (Fişler)
     for fis in Fis.objects.filter(cari_hesap=cari):
-        if fis.odeme_durumu == Fis.DURUM_BEKLIYOR:
-            if fis.fis_turu == Fis.FIS_ALIS:
+        if fis.fis_turu == Fis.FIS_SATIS:
+            # Satış fişi
+            if is_tedarikci:
+                bakiye -= _q(fis.tutar)
+            else:
+                bakiye += _q(fis.tutar)
+        else:
+            # Alış fişi
+            if is_tedarikci:
                 bakiye += _q(fis.tutar)
             else:
                 bakiye -= _q(fis.tutar)
 
-    for alacak in Alacak.objects.filter(cari_hesap=cari):
-        if alacak.durum == Alacak.DURUM_BEKLIYOR:
-            bakiye -= _q(alacak.tutar)
+    # Faturalar
+    for fatura in Fatura.objects.filter(cari_hesap=cari):
+        if fatura.tur == Fatura.TUR_GIDEN:
+            # Giden (Satış)
+            if is_tedarikci:
+                bakiye -= _q(fatura.toplam_tutar)
+            else:
+                bakiye += _q(fatura.toplam_tutar)
+        else:
+            # Gelen (Alış)
+            if is_tedarikci:
+                bakiye += _q(fatura.toplam_tutar)
+            else:
+                bakiye -= _q(fatura.toplam_tutar)
 
-    for odeme in Odeme.objects.filter(cari_hesap=cari):
-        if odeme.durum == Odeme.DURUM_BEKLIYOR:
-            bakiye += _q(odeme.tutar)
+    # Kasa/Para Hareketleri (Tahsilatlar / Ödemeler)
+    for hareket in KasaHareketi.objects.filter(cari_hesap=cari, isletme_gideri__isnull=True):
+        if hareket.islem_turu == KasaHareketi.ISLEM_GIRIS:
+            # Tahsilat (Bize giren para)
+            if is_tedarikci:
+                bakiye += _q(hareket.tutar)
+            else:
+                bakiye -= _q(hareket.tutar)
+        else:
+            # Ödeme (Bizden çıkan para)
+            if is_tedarikci:
+                bakiye -= _q(hareket.tutar)
+            else:
+                bakiye += _q(hareket.tutar)
+
+    # Çek / Senetler
+    for belge in CekSenet.objects.filter(cari_hesap=cari).exclude(durum=CekSenet.DURUM_KARSILIKSIZ):
+        if belge.yon == CekSenet.YON_ALINAN:
+            # Müşteriden/Tedarikçiden alınan evrak (Tahsilat)
+            if is_tedarikci:
+                bakiye += _q(belge.tutar)
+            else:
+                bakiye -= _q(belge.tutar)
+        else:
+            # Bizim verdiğimiz evrak (Ödeme)
+            if is_tedarikci:
+                bakiye -= _q(belge.tutar)
+            else:
+                bakiye += _q(belge.tutar)
 
     cari.guncel_bakiye = _q(bakiye)
     cari.save(update_fields=['guncel_bakiye'])

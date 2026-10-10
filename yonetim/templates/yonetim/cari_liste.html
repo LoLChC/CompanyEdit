@@ -59,11 +59,11 @@
                         {{ cari.vergi_dairesi|default:"-" }}
                         {% if cari.vergi_no %}<br><small class="text-muted">{{ cari.vergi_no }}</small>{% endif %}
                     </td>
-                    <td class="text-right amount {% if cari.guncel_bakiye > 0 %}text-danger{% elif cari.guncel_bakiye < 0 %}text-success{% endif %}">
+                    <td class="text-right amount {% if cari.tur == 'musteri' %}{% if cari.guncel_bakiye > 0 %}text-success{% elif cari.guncel_bakiye < 0 %}text-warning{% endif %}{% elif cari.tur == 'tedarikci' %}{% if cari.guncel_bakiye > 0 %}text-danger{% elif cari.guncel_bakiye < 0 %}text-success{% endif %}{% endif %}">
                         {{ cari.guncel_bakiye|floatformat:2 }} TL
                     </td>
                     <td>
-                        <span class="badge {% if cari.guncel_bakiye > 0 %}badge-danger{% elif cari.guncel_bakiye < 0 %}badge-success{% else %}badge-secondary{% endif %}">
+                        <span class="badge {% if cari.tur == 'musteri' %}{% if cari.guncel_bakiye > 0 %}bg-success-subtle text-success{% elif cari.guncel_bakiye < 0 %}bg-warning-subtle text-warning{% else %}badge-secondary{% endif %}{% elif cari.tur == 'tedarikci' %}{% if cari.guncel_bakiye > 0 %}bg-danger-subtle text-danger{% elif cari.guncel_bakiye < 0 %}bg-success-subtle text-success{% else %}badge-secondary{% endif %}{% else %}badge-secondary{% endif %}">
                             {{ cari.bakiye_durumu }}
                         </span>
                     </td>

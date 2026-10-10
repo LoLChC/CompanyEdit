@@ -134,14 +134,6 @@ class Odeme(models.Model):
         max_length=200,
         verbose_name='Kime',
     )
-    cari_hesap = models.ForeignKey(
-        'CariHesap',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name='Cari Hesap',
-        related_name='odemeler',
-    )
     aciklama = models.TextField(
         verbose_name='Açıklama',
         blank=True,
@@ -198,14 +190,6 @@ class Alacak(models.Model):
     kimden = models.CharField(
         max_length=200,
         verbose_name='Kimden',
-    )
-    cari_hesap = models.ForeignKey(
-        'CariHesap',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name='Cari Hesap',
-        related_name='alacaklar',
     )
     aciklama = models.TextField(
         verbose_name='Açıklama',
@@ -448,9 +432,13 @@ class CariHesap(models.Model):
     @property
     def bakiye_durumu(self):
         if self.guncel_bakiye > Decimal('0.00'):
-            return 'Alacaklı (Biz Borçluyuz)'
+            if self.tur == self.TUR_TEDARIKCI:
+                return 'Borcumuz Var (Biz Ödeyeceğiz)'
+            return 'Borçlu (Bize Ödeyecek)'
         elif self.guncel_bakiye < Decimal('0.00'):
-            return 'Borçlu (Biz Alacaklıyız)'
+            if self.tur == self.TUR_TEDARIKCI:
+                return 'Avans Verdik (Alacağımız Var)'
+            return 'Alacaklı / Avans (Biz Ödeyeceğiz)'
         return 'Bakiye Sıfır'
 
 

@@ -4,13 +4,13 @@
 {% block page_title %}İşletme Giderleri{% endblock %}
 
 {% block header_actions %}
-<a href="{% url 'yonetim:gider_ekle' %}" class="btn btn-primary">+ Yeni Gider Ekle</a>
+<button type="button" class="btn btn-primary" onclick="document.getElementById('gider-modal').style.display='block'">+ Yeni Gider Ekle</button>
 {% endblock %}
 
 {% block content %}
 <div class="summary-grid">
     <div class="summary-card summary-danger">
-        <span class="summary-label">Toplam İşletme Gideri</span>
+        <span class="summary-label">Bu Ayki Toplam Gider</span>
         <span class="summary-value">{{ toplam_gider|floatformat:2 }} TL</span>
     </div>
     <div class="summary-card summary-primary">
@@ -34,6 +34,7 @@
                     <th>KDV Oranı</th>
                     <th class="text-right">Tutar</th>
                     <th>Belge</th>
+                    <th>İşlemler</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,14 +55,61 @@
                         -
                         {% endif %}
                     </td>
+                    <td>
+                        <a href="{% url 'yonetim:gider_duzenle' gider.id %}" class="btn btn-sm btn-outline-primary" style="padding:2px 5px; font-size:12px;">Düzenle</a>
+                        <form action="{% url 'yonetim:gider_sil' gider.id %}" method="post" style="display:inline;" onsubmit="return confirm('Bu gideri ve kasa hareketini silmek istediğinize emin misiniz?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px;">Sil</button>
+                        </form>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="empty-state">Henüz işletme gideri kaydı bulunmuyor.</td>
+                    <td colspan="8" class="empty-state">Henüz işletme gideri kaydı bulunmuyor.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+</div>
+    </div>
+</div>
+
+<!-- Gider Ekle Modal -->
+<div id="gider-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; padding: 2rem;">
+    <div class="card" style="max-width: 500px; margin: 4rem auto; position: relative;">
+        <button type="button" onclick="document.getElementById('gider-modal').style.display='none'" style="position: absolute; right: 1rem; top: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h2>Yeni Gider Ekle</h2>
+        <form method="post" action="{% url 'yonetim:gider_ekle' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Gider Kalemi / Başlık (Kira, Fatura, Yakıt vb.)</label>
+                <input type="text" name="yeni_kategori" class="form-control" required placeholder="Örn: Kira">
+            </div>
+            <div class="form-group">
+                <label>Tutar (TL)</label>
+                <input type="number" name="tutar" step="0.01" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Tarih</label>
+                <input type="date" name="odeme_tarihi" value="{{ bugun|date:'Y-m-d' }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Kasa Seçimi (Nakit, Banka vb.)</label>
+                <select name="kasa" class="form-control" required>
+                    {% for kasa in kasalar %}
+                    <option value="{{ kasa.id }}">{{ kasa.kasa_adi }} (Bakiye: {{ kasa.guncel_bakiye }} {{ kasa.para_birimi }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Açıklama / Belge No</label>
+                <input type="text" name="aciklama" class="form-control">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('gider-modal').style.display='none'">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

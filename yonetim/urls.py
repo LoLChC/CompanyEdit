@@ -27,6 +27,10 @@ urlpatterns = [
     path('cariler/yeni/', views.cari_ekle, name='cari_ekle'),
     path('cariler/<int:pk>/', views.cari_detay, name='cari_detay'),
     path('cariler/<int:pk>/sil/', views.cari_sil, name='cari_sil'),
+    path('cariler/<int:pk>/tahsilat/', views.cari_tahsilat_ekle, name='cari_tahsilat_ekle'),
+    path('cariler/<int:pk>/odeme/', views.cari_odeme_ekle, name='cari_odeme_ekle'),
+    path('cariler/hareket/<int:pk>/duzenle/', views.cari_kasa_hareketi_duzenle, name='cari_kasa_hareketi_duzenle'),
+    path('cariler/hareket/<int:pk>/sil/', views.cari_kasa_hareketi_sil, name='cari_kasa_hareketi_sil'),
 
     path('butce/', views.butce_liste, name='butce_liste'),
     path('butce/yeni/', views.butce_ekle, name='butce_ekle'),
@@ -45,6 +49,8 @@ urlpatterns = [
 
     path('giderler/', views.gider_liste, name='gider_liste'),
     path('giderler/yeni/', views.gider_ekle, name='gider_ekle'),
+    path('giderler/<int:pk>/duzenle/', views.gider_duzenle, name='gider_duzenle'),
+    path('giderler/<int:pk>/sil/', views.gider_sil, name='gider_sil'),
 
     path('faturalar/', views.fatura_liste, name='fatura_liste'),
     path('faturalar/yeni/', views.fatura_ekle, name='fatura_ekle'),

@@ -45,16 +45,16 @@ class ButceAdmin(admin.ModelAdmin):
 
 @admin.register(Odeme)
 class OdemeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tutar', 'islem_tarihi', 'vade_tarihi', 'kime', 'cari_hesap', 'durum', 'butce')
+    list_display = ('id', 'tutar', 'islem_tarihi', 'vade_tarihi', 'kime', 'durum', 'butce')
     list_filter = ('durum', 'islem_tarihi')
-    search_fields = ('kime', 'aciklama', 'cari_hesap__unvan')
+    search_fields = ('kime', 'aciklama')
 
 
 @admin.register(Alacak)
 class AlacakAdmin(admin.ModelAdmin):
-    list_display = ('id', 'tutar', 'islem_tarihi', 'tahsil_tarihi', 'kimden', 'cari_hesap', 'durum', 'butce')
+    list_display = ('id', 'tutar', 'islem_tarihi', 'tahsil_tarihi', 'kimden', 'durum', 'butce')
     list_filter = ('durum', 'islem_tarihi')
-    search_fields = ('kimden', 'aciklama', 'cari_hesap__unvan')
+    search_fields = ('kimden', 'aciklama')
 
 
 @admin.register(HaftalikPlan)

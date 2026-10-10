@@ -13,46 +13,234 @@
     <p class="text-muted">{{ cari.get_tur_display }}</p>
     
     <div style="margin-top: 1rem;">
-        <span style="font-size: 2.5rem; font-weight: bold; color: {% if cari.guncel_bakiye > 0 %}var(--danger-color){% elif cari.guncel_bakiye < 0 %}var(--success-color){% else %}var(--text-color){% endif %};">
+        <span style="font-size: 2.5rem; font-weight: bold; color: {% if cari.tur == 'musteri' %}{% if cari.guncel_bakiye > 0 %}var(--success-color){% elif cari.guncel_bakiye < 0 %}var(--warning-color){% else %}var(--text-color){% endif %}{% elif cari.tur == 'tedarikci' %}{% if cari.guncel_bakiye > 0 %}var(--danger-color){% elif cari.guncel_bakiye < 0 %}var(--success-color){% else %}var(--text-color){% endif %}{% else %}var(--text-color){% endif %};">
             {{ cari.guncel_bakiye }} TL
         </span>
     </div>
     <div style="margin-top: 0.5rem; font-size: 1.1rem; font-weight: 500;">
-        Durum: {{ cari.bakiye_durumu }}
+        Durum: 
+        {% if cari.tur == 'musteri' %}
+            {% if cari.guncel_bakiye > 0 %}
+                <span class="badge bg-success-subtle text-success" style="font-size: 1rem;">{{ cari.bakiye_durumu }}</span>
+            {% elif cari.guncel_bakiye < 0 %}
+                <span class="badge bg-warning-subtle text-warning" style="font-size: 1rem;">{{ cari.bakiye_durumu }}</span>
+            {% else %}
+                Bakiye Sıfır
+            {% endif %}
+        {% elif cari.tur == 'tedarikci' %}
+            {% if cari.guncel_bakiye > 0 %}
+                <span class="badge bg-danger-subtle text-danger" style="font-size: 1rem;">{{ cari.bakiye_durumu }}</span>
+            {% elif cari.guncel_bakiye < 0 %}
+                <span class="badge bg-success-subtle text-success" style="font-size: 1rem;">{{ cari.bakiye_durumu }}</span>
+            {% else %}
+                Bakiye Sıfır
+            {% endif %}
+        {% else %}
+            Bakiye Sıfır
+        {% endif %}
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h2>Cari Ekstre (Hareket Geçmişi)</h2>
+<div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+    
+    <!-- Kasa / Para Hareketleri -->
+    <div class="card">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <h2 style="margin: 0; font-size: 1.25rem;">Kasa / Para Hareketleri</h2>
+            
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-success btn-sm" onclick="document.getElementById('tahsilat-modal').style.display='block'">
+                    + Para Alındı / Tahsilat
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="document.getElementById('odeme-modal').style.display='block'">
+                    - Para Ödendi
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>İşlem</th>
+                        <th style="text-align: right;">Tutar</th>
+                        <th style="text-align: center;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in para_hareketleri %}
+                    <tr>
+                        <td>{{ h.tarih|date:"d.m.Y" }}</td>
+                        <td>
+                            <div><span class="badge badge-{{ h.renk }}">{{ h.tur }}</span></div>
+                            <div style="font-size: 0.85rem; color: #666;">{{ h.aciklama }}</div>
+                        </td>
+                        <td style="text-align: right; font-weight: bold; color: {% if h.renk == 'success' %}var(--success-color){% else %}var(--danger-color){% endif %};">
+                            {% if h.borc_alacak == 'alacak' %}-{% else %}+{% endif %} {{ h.tutar }} TL
+                        </td>
+                        <td style="text-align: center;">
+                            {% if h.is_kasa_hareketi %}
+                            <button type="button" class="btn btn-sm btn-outline-primary" style="padding:2px 5px; font-size:12px;" onclick="document.getElementById('edit-modal-{{ h.id }}').style.display='block'">Düzenle</button>
+                            <form action="{% url 'yonetim:cari_kasa_hareketi_sil' h.id %}" method="post" style="display:inline;" onsubmit="return confirm('Bu para hareketini silmek istediğinize emin misiniz? Cari bakiye güncellenecektir.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="padding:2px 5px; font-size:12px;">Sil</button>
+                            </form>
+                            
+                            <!-- Düzenle Modal -->
+                            <div id="edit-modal-{{ h.id }}" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; padding: 2rem; text-align: left;">
+                                <div class="card" style="max-width: 500px; margin: 4rem auto; position: relative;">
+                                    <button type="button" onclick="document.getElementById('edit-modal-{{ h.id }}').style.display='none'" style="position: absolute; right: 1rem; top: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                                    <h2>Para Hareketini Düzenle</h2>
+                                    <form method="post" action="{% url 'yonetim:cari_kasa_hareketi_duzenle' h.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label>Tutar (TL)</label>
+                                            <input type="number" name="tutar" step="0.01" class="form-control" required value="{{ h.tutar|stringformat:'s' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Tarih</label>
+                                            <input type="date" name="tarih" value="{{ h.tarih|date:'Y-m-d' }}" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>İlgili Kasa/Hesap</label>
+                                            <select name="kasa" class="form-control" required>
+                                                {% for kasa in kasalar %}
+                                                <option value="{{ kasa.id }}" {% if kasa.id == h.kasa_id %}selected{% endif %}>{{ kasa.kasa_adi }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Açıklama</label>
+                                            <input type="text" name="aciklama" class="form-control" value="{{ h.aciklama }}">
+                                        </div>
+                                        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-modal-{{ h.id }}').style.display='none'">İptal</button>
+                                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Henüz para hareketi yok.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tarih</th>
-                    <th>Tür</th>
-                    <th>Açıklama</th>
-                    <th style="text-align: right;">Tutar</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for h in hareketler %}
-                <tr>
-                    <td>{{ h.tarih|date:"d.m.Y" }}</td>
-                    <td><span class="badge badge-{{ h.renk }}">{{ h.tur }}</span></td>
-                    <td>{{ h.aciklama }}</td>
-                    <td style="text-align: right; font-weight: bold; color: {% if h.renk == 'success' %}var(--success-color){% else %}var(--danger-color){% endif %};">
-                        {% if h.borc_alacak == 'borc' %}-{% else %}+{% endif %} {{ h.tutar }} TL
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" style="text-align: center;">Bu cariye ait henüz hareket bulunmamaktadır.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Ürün / Mal Hareketleri -->
+    <div class="card">
+        <div class="card-header">
+            <h2 style="margin: 0; font-size: 1.25rem;">Ürün / Mal Hareketleri</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Fiş/Fatura</th>
+                        <th style="text-align: right;">Tutar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in urun_hareketleri %}
+                    <tr>
+                        <td>{{ h.tarih|date:"d.m.Y" }}</td>
+                        <td>
+                            <div><span class="badge badge-{{ h.renk }}">{{ h.tur }}</span></div>
+                            <div style="font-size: 0.85rem; color: #666;">{{ h.aciklama }}</div>
+                        </td>
+                        <td style="text-align: right; font-weight: bold; color: {% if h.borc_alacak == 'borc' %}var(--danger-color){% else %}var(--success-color){% endif %};">
+                            {% if h.borc_alacak == 'alacak' %}-{% else %}+{% endif %} {{ h.tutar }} TL
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Henüz mal hareketi yok.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Tahsilat Ekle Modal -->
+<div id="tahsilat-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; padding: 2rem;">
+    <div class="card" style="max-width: 500px; margin: 4rem auto; position: relative;">
+        <button type="button" onclick="document.getElementById('tahsilat-modal').style.display='none'" style="position: absolute; right: 1rem; top: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h2>Para Alındı / Tahsilat Ekle</h2>
+        <form method="post" action="{% url 'yonetim:cari_tahsilat_ekle' cari.pk %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Tutar (TL)</label>
+                <input type="number" name="tutar" step="0.01" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Tarih</label>
+                <input type="date" name="tarih" value="{{ bugun|date:'Y-m-d' }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Hangi Kasaya/Hesaba Girecek?</label>
+                <select name="kasa" class="form-control" required>
+                    {% for kasa in kasalar %}
+                    <option value="{{ kasa.id }}">{{ kasa.kasa_adi }} (Bakiye: {{ kasa.guncel_bakiye }} {{ kasa.para_birimi }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Açıklama (Nakit, Havale vb.)</label>
+                <input type="text" name="aciklama" class="form-control" value="Nakit Tahsilat">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('tahsilat-modal').style.display='none'">İptal</button>
+                <button type="submit" class="btn btn-success">Kaydet (Borç Düş)</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<!-- Ödeme Ekle Modal -->
+<div id="odeme-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; padding: 2rem;">
+    <div class="card" style="max-width: 500px; margin: 4rem auto; position: relative;">
+        <button type="button" onclick="document.getElementById('odeme-modal').style.display='none'" style="position: absolute; right: 1rem; top: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <h2>Para Ödendi</h2>
+        <form method="post" action="{% url 'yonetim:cari_odeme_ekle' cari.pk %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Tutar (TL)</label>
+                <input type="number" name="tutar" step="0.01" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Tarih</label>
+                <input type="date" name="tarih" value="{{ bugun|date:'Y-m-d' }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Hangi Kasadan/Hesaptan Çıkacak?</label>
+                <select name="kasa" class="form-control" required>
+                    {% for kasa in kasalar %}
+                    <option value="{{ kasa.id }}">{{ kasa.kasa_adi }} (Bakiye: {{ kasa.guncel_bakiye }} {{ kasa.para_birimi }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Açıklama (Nakit, Havale vb.)</label>
+                <input type="text" name="aciklama" class="form-control" value="Nakit Ödeme">
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('odeme-modal').style.display='none'">İptal</button>
+                <button type="submit" class="btn btn-danger">Kaydet (Borç Öde)</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
